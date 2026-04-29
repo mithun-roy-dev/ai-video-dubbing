@@ -4,17 +4,29 @@ import { useJobStore } from '../store/useJobStore'
 import { DropZone } from '../components/DropZone'
 import { LanguageSelect } from '../components/LanguageSelect'
 import { estimateCost, formatCostRange, estimateTimeMins } from '../lib/cost'
-import { startJob, JobConfig } from '../lib/sidecar'
+import { startJob, buildApiProvidersPayload, type JobConfig } from '../lib/sidecar'
 
 export function HomeScreen() {
-  const { mode, settings, sourceLang, targetLang, videoPath, youtubeUrl, setYoutubeUrl } =
+  const { mode, settings, apiProviders, sourceLang, targetLang, videoPath, youtubeUrl, setYoutubeUrl } =
     useAppStore()
   const { status } = useJobStore()
   const [validationError, setValidationError] = useState<string | null>(null)
 
-  const videoDurationSec = 300 // We don't know until download; use placeholder for estimate
+  const videoDurationSec = 300
   const estimate = estimateCost(videoDurationSec, mode, settings.lipSyncEnabled)
   const timeMins = estimateTimeMins(videoDurationSec, mode, settings.lipSyncEnabled)
+
+  function validateApiProviders(): string | null {
+    if (!apiProviders.transcription.apiKey)
+      return 'Transcription API key is missing. Please configure it in Settings → API Providers.'
+    if (!apiProviders.translation.apiKey)
+      return 'Translation API key is missing. Please configure it in Settings → API Providers.'
+    if (!apiProviders.tts.apiKey)
+      return 'TTS API key is missing. Please configure it in Settings → API Providers.'
+    if (settings.lipSyncEnabled && apiProviders.lipsync.provider === 'synclabs' && !apiProviders.lipsync.apiKey)
+      return 'Sync Labs API key is missing. Please configure it in Settings → API Providers.'
+    return null
+  }
 
   async function handleStartDubbing() {
     setValidationError(null)
@@ -23,20 +35,10 @@ export function HomeScreen() {
       setValidationError('Please drop a video file or paste a YouTube URL.')
       return
     }
-    if (!settings.openrouterKey) {
-      setValidationError('OpenRouter API key is required. Please add it in Settings.')
-      return
-    }
-    if (mode === 'budget' && !settings.kieAiKey) {
-      setValidationError('KIE AI API key is required for Budget TTS. Please add it in Settings.')
-      return
-    }
-    if (mode === 'premium' && !settings.elevenLabsKey) {
-      setValidationError('ElevenLabs API key is required for Premium TTS. Please add it in Settings.')
-      return
-    }
-    if (mode === 'premium' && settings.lipSyncEnabled && !settings.syncLabsKey) {
-      setValidationError('Sync Labs API key is required for Premium Lip Sync. Please add it in Settings.')
+
+    const providerErr = validateApiProviders()
+    if (providerErr) {
+      setValidationError(providerErr)
       return
     }
 
@@ -51,13 +53,9 @@ export function HomeScreen() {
         target_lang: targetLang,
         mode,
         lip_sync_enabled: settings.lipSyncEnabled,
-        lip_sync_engine: settings.lipSyncEngine,
-        api_keys: {
-          openrouter: settings.openrouterKey,
-          kie_ai: settings.kieAiKey,
-          elevenlabs: settings.elevenLabsKey || null,
-          sync_labs: settings.syncLabsKey || null,
-        },
+        gpu_enabled: settings.gpuEnabled,
+        keep_temp_files: settings.keepTempFiles,
+        api_providers: buildApiProvidersPayload(apiProviders),
       },
     }
 

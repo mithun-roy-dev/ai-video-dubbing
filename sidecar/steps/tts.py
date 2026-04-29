@@ -1,7 +1,7 @@
 """
 Step 5 — Text-to-Speech.
-Budget: KIE AI TTS API
-Premium: ElevenLabs Multilingual v2
+Uses per-step provider config from job_config['api_providers']['tts'].
+Supported providers: kie_ai, elevenlabs
 """
 
 import os
@@ -10,14 +10,16 @@ import requests
 
 log = logging.getLogger(__name__)
 
-# ElevenLabs voice IDs that support multilingual v2
-# User can override via settings; these are sensible defaults
-ELEVENLABS_DEFAULT_VOICE = "pNInz6obpgDQGcFmaJgB"  # "Adam" — multilingual
+# ElevenLabs default voice — "Adam" (multilingual)
+ELEVENLABS_DEFAULT_VOICE = "pNInz6obpgDQGcFmaJgB"
 
 
-def run(translated: list, job_config: dict, service_cfg: dict, temp_dir: str, progress_fn=None) -> list:
-    provider = service_cfg["tts"]["provider"]
-    api_keys = service_cfg["api_keys"]
+def run(translated: list, job_config: dict, temp_dir: str, progress_fn=None) -> list:
+    cfg = job_config['api_providers']['tts']
+    provider = cfg['provider']
+    api_key = cfg['api_key']
+    api_path = cfg['api_path']
+    model = cfg['model']
     target_lang = job_config.get("target_lang", "en")
 
     segments_with_audio = []
@@ -31,10 +33,12 @@ def run(translated: list, job_config: dict, service_cfg: dict, temp_dir: str, pr
 
         out_path = os.path.join(temp_dir, f"tts_{i:04d}.wav")
 
+        log.debug(f"TTS segment {i+1}/{total}: provider={provider} model={model}")
+
         if provider == "kie_ai":
-            _tts_kie_ai(text, target_lang, api_keys["kie_ai"], out_path)
+            _tts_kie_ai(text, target_lang, api_key, api_path, model, out_path)
         elif provider == "elevenlabs":
-            _tts_elevenlabs(text, target_lang, api_keys["elevenlabs"], service_cfg["tts"], out_path)
+            _tts_elevenlabs(text, api_key, api_path, model, out_path)
         else:
             raise ValueError(f"Unknown TTS provider: {provider}")
 
@@ -48,15 +52,14 @@ def run(translated: list, job_config: dict, service_cfg: dict, temp_dir: str, pr
     return segments_with_audio
 
 
-def _tts_kie_ai(text: str, lang: str, api_key: str, out_path: str):
-    """KIE AI TTS — check kie.ai docs for current endpoint."""
+def _tts_kie_ai(text: str, lang: str, api_key: str, api_path: str, model: str, out_path: str):
     if not api_key:
         raise ValueError("KIE AI API key is missing.")
 
-    # NOTE: Verify endpoint at https://kie.ai/dashboard — may require update
-    url = "https://api.kie.ai/v1/tts"
+    base = api_path.rstrip("/") or "https://api.kie.ai/v1"
+    url = f"{base}/tts"
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    payload = {"text": text, "language": lang, "format": "wav"}
+    payload = {"text": text, "language": lang, "model": model, "format": "wav"}
 
     resp = requests.post(url, json=payload, headers=headers, timeout=60)
     if resp.status_code != 200:
@@ -66,19 +69,18 @@ def _tts_kie_ai(text: str, lang: str, api_key: str, out_path: str):
         f.write(resp.content)
 
 
-def _tts_elevenlabs(text: str, lang: str, api_key: str, tts_cfg: dict, out_path: str):
-    """ElevenLabs Multilingual v2 TTS."""
+def _tts_elevenlabs(text: str, api_key: str, api_path: str, model: str, out_path: str):
     if not api_key:
         raise ValueError("ElevenLabs API key is missing.")
 
+    base = api_path.rstrip("/") or "https://api.elevenlabs.io/v1"
     voice_id = ELEVENLABS_DEFAULT_VOICE
-    model_id = tts_cfg.get("model", "eleven_multilingual_v2")
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    url = f"{base}/text-to-speech/{voice_id}"
 
     headers = {"xi-api-key": api_key, "Content-Type": "application/json"}
     payload = {
         "text": text,
-        "model_id": model_id,
+        "model_id": model or "eleven_multilingual_v2",
         "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
     }
 

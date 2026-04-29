@@ -1,6 +1,6 @@
 """
 Step 4 — Translation.
-Sends transcript segments to LLM for translation.
+Uses per-step provider config from job_config['api_providers']['translation'].
 Preserves segment count and timing boundaries.
 """
 
@@ -26,23 +26,31 @@ Rules:
 ]"""
 
 
-def run(transcript: list, job_config: dict, service_cfg: dict, progress_fn=None) -> list:
-    cfg = service_cfg["translation"]
-    api_key = service_cfg["api_keys"]["openrouter"]
+def run(transcript: list, job_config: dict, progress_fn=None) -> list:
+    cfg = job_config['api_providers']['translation']
+    provider = cfg['provider']
+    api_key = cfg['api_key']
+    api_path = cfg['api_path']
+    model = cfg['model']
     source_lang = job_config.get("source_lang", "?")
     target_lang = job_config.get("target_lang", "en")
 
-    client = OpenAI(api_key=api_key, base_url=cfg["base_url"])
+    if not api_key:
+        raise ValueError(f"Translation API key is missing (provider: {provider}).")
+    if not api_path:
+        raise ValueError(f"Translation API base URL is missing (provider: {provider}).")
+
+    client = OpenAI(api_key=api_key, base_url=api_path)
 
     segments_payload = [{"index": s["index"], "text": s["text"]} for s in transcript]
     system = SYSTEM_PROMPT.format(source_lang=source_lang, target_lang=target_lang)
 
-    log.info(f"Translating {len(transcript)} segments using {cfg['model']}")
+    log.info(f"[Translation] provider={provider} model={model}, {len(transcript)} segments")
     if progress_fn:
-        progress_fn(10, f"Sending {len(transcript)} segments to LLM...")
+        progress_fn(10, f"Sending {len(transcript)} segments to {provider} / {model}...")
 
     response = client.chat.completions.create(
-        model=cfg["model"],
+        model=model,
         messages=[
             {"role": "system", "content": system},
             {"role": "user", "content": json.dumps(segments_payload, ensure_ascii=False)},
@@ -62,7 +70,6 @@ def run(transcript: list, job_config: dict, service_cfg: dict, progress_fn=None)
 
 def _parse_translation(raw: str, original: list) -> list:
     """Parse LLM response and merge translated text back with timing data."""
-    # Strip markdown fences if present
     if raw.startswith("```"):
         raw = raw.split("```")[1]
         if raw.startswith("json"):
@@ -75,7 +82,7 @@ def _parse_translation(raw: str, original: list) -> list:
         return original
 
     if len(items) != len(original):
-        log.warning(f"Segment count mismatch: got {len(items)}, expected {len(original)}. Attempting best-effort merge.")
+        log.warning(f"Segment count mismatch: got {len(items)}, expected {len(original)}.")
 
     translated = []
     orig_by_index = {s["index"]: s for s in original}

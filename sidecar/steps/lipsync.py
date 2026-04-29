@@ -1,7 +1,7 @@
 """
 Step 7 — Lip Sync (Optional).
-Budget: Wav2Lip local Python inference
-Premium: Sync Labs API (async polling)
+Uses per-step provider config from job_config['api_providers']['lipsync'].
+Supported providers: wav2lip, synclabs
 """
 
 import os
@@ -11,34 +11,35 @@ import requests
 
 log = logging.getLogger(__name__)
 
-WAV2LIP_MODEL_PATH_ENV = "VIDEODUB_MODEL_DIR"
-WAV2LIP_CHECKPOINT = "wav2lip.pth"
+WAV2LIP_CHECKPOINT_NAME = "wav2lip.pth"
+WAV2LIP_DEFAULT_MODEL_DIR = os.path.join(os.path.expanduser("~"), ".videodub", "models")
 
 
-def run(video_path: str, audio_path: str, job_config: dict, service_cfg: dict, temp_dir: str, progress_fn=None) -> str:
-    provider = service_cfg["lipsync"]["provider"]
+def run(video_path: str, audio_path: str, job_config: dict, temp_dir: str, progress_fn=None) -> str:
+    cfg = job_config['api_providers']['lipsync']
+    provider = cfg['provider']
 
     if provider == "wav2lip":
-        return _run_wav2lip(video_path, audio_path, job_config, service_cfg, temp_dir, progress_fn)
+        return _run_wav2lip(video_path, audio_path, cfg, job_config, temp_dir, progress_fn)
     elif provider == "synclabs":
-        return _run_synclabs(video_path, audio_path, job_config, service_cfg, temp_dir, progress_fn)
+        return _run_synclabs(video_path, audio_path, cfg, temp_dir, progress_fn)
     else:
         raise ValueError(f"Unknown lip sync provider: {provider}")
 
 
 # ─── Wav2Lip ───────────────────────────────────────────────────────────────
 
-def _run_wav2lip(video_path: str, audio_path: str, job_config: dict, service_cfg: dict, temp_dir: str, progress_fn) -> str:
+def _run_wav2lip(video_path: str, audio_path: str, cfg: dict, job_config: dict, temp_dir: str, progress_fn) -> str:
     import subprocess
     import sys
 
-    model_dir = os.environ.get(WAV2LIP_MODEL_PATH_ENV, os.path.join(os.path.expanduser("~"), ".videodub", "models"))
-    checkpoint = os.path.join(model_dir, WAV2LIP_CHECKPOINT)
+    model_dir = os.environ.get("VIDEODUB_MODEL_DIR", WAV2LIP_DEFAULT_MODEL_DIR)
+    checkpoint = os.path.join(model_dir, WAV2LIP_CHECKPOINT_NAME)
 
     if not os.path.exists(checkpoint):
         raise FileNotFoundError(
             f"Wav2Lip model not found at {checkpoint}. "
-            "Please download it from the app settings or first-run dialog."
+            "Please download it from Settings or the first-run setup dialog."
         )
 
     output_path = os.path.join(temp_dir, "lipsync_output.mp4")
@@ -69,31 +70,30 @@ def _run_wav2lip(video_path: str, audio_path: str, job_config: dict, service_cfg
 
 # ─── Sync Labs ─────────────────────────────────────────────────────────────
 
-def _run_synclabs(video_path: str, audio_path: str, job_config: dict, service_cfg: dict, temp_dir: str, progress_fn) -> str:
-    cfg = service_cfg["lipsync"]
-    api_key = service_cfg["api_keys"]["sync_labs"]
+def _run_synclabs(video_path: str, audio_path: str, cfg: dict, temp_dir: str, progress_fn) -> str:
+    api_key = cfg['api_key']
+    api_path = cfg['api_path'] or "https://api.sync.so/v2/generate"
+    model = cfg['model'] or "lipsync-2"
 
     if not api_key:
         raise ValueError("Sync Labs API key is missing.")
 
-    # Sync Labs requires publicly accessible URLs — upload files first
-    # In production, upload to a signed URL or temp storage; here we use direct file POST
     headers = {"x-api-key": api_key, "Content-Type": "application/json"}
 
     if progress_fn:
         progress_fn(5, "Submitting job to Sync Labs...")
 
-    # For the API to work, video/audio must be accessible URLs.
-    # This placeholder shows the structure — actual upload step needed in production.
+    # NOTE: Sync Labs requires publicly accessible URLs.
+    # In production, upload video/audio to a CDN and pass the URLs here.
     payload = {
-        "model": cfg.get("model", "lipsync-2"),
+        "model": model,
         "input": [
             {"type": "video", "url": f"file://{video_path}"},
             {"type": "audio", "url": f"file://{audio_path}"},
         ],
     }
 
-    resp = requests.post(cfg["api_url"], json=payload, headers=headers, timeout=60)
+    resp = requests.post(api_path, json=payload, headers=headers, timeout=60)
     if resp.status_code not in (200, 201):
         raise RuntimeError(f"Sync Labs submit error {resp.status_code}: {resp.text[:200]}")
 
@@ -104,9 +104,10 @@ def _run_synclabs(video_path: str, audio_path: str, job_config: dict, service_cf
     log.info(f"Sync Labs job submitted: {job_id}")
 
     # Poll for completion
-    poll_url = f"{cfg['api_url']}/{job_id}"
-    timeout = cfg.get("timeout_sec", 600)
-    interval = cfg.get("poll_interval_sec", 5)
+    poll_base = api_path.rstrip("/")
+    poll_url = f"{poll_base}/{job_id}"
+    timeout = 600
+    interval = 5
     elapsed = 0
 
     while elapsed < timeout:
