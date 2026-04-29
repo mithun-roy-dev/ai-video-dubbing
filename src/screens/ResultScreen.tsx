@@ -15,20 +15,20 @@ export function ResultScreen() {
 
   if (!result) return null
 
-  const fileName = result.outputPath.split(/[\\/]/).pop() ?? 'dubbed_output.mp4'
+  const currentResult = result
+  const fileName = currentResult.outputPath.split(/[\\/]/).pop() ?? 'dubbed_output.mp4'
 
   async function handleSave() {
     const defaultName = `${targetLang}_dubbed_${Date.now()}.mp4`
     const savePath = await saveVideoAs(defaultName)
     if (savePath) {
-      // Tauri fs copy
       const { copyFile } = await import('@tauri-apps/plugin-fs')
-      await copyFile(result.outputPath, savePath)
+      await copyFile(currentResult.outputPath, savePath)
     }
   }
 
   async function handleOpenInExplorer() {
-    await openInExplorer(result.outputPath)
+    await openInExplorer(currentResult.outputPath)
   }
 
   function handleDubAnother() {
@@ -47,7 +47,7 @@ export function ResultScreen() {
         <video
           id="result-video"
           className="result-video"
-          src={`asset://${result.outputPath}`}
+          src={`asset://${currentResult.outputPath}`}
           controls
           preload="metadata"
         />
@@ -68,7 +68,7 @@ export function ResultScreen() {
             </tr>
             <tr>
               <td>Duration</td>
-              <td><strong>{formatDuration(result.durationSec)}</strong></td>
+              <td><strong>{formatDuration(currentResult.durationSec)}</strong></td>
             </tr>
             <tr>
               <td>Mode used</td>
@@ -80,7 +80,7 @@ export function ResultScreen() {
             </tr>
             <tr>
               <td>Total API cost</td>
-              <td><strong>~${result.costUsd.toFixed(3)}</strong></td>
+              <td><strong>~${currentResult.costUsd.toFixed(3)}</strong></td>
             </tr>
           </tbody>
         </table>

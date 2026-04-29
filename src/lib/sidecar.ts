@@ -1,4 +1,4 @@
-import { Child, Command } from '@tauri-apps/plugin-shell'
+import { Command } from '@tauri-apps/plugin-shell'
 import { useJobStore } from '../store/useJobStore'
 
 export interface JobConfig {
@@ -21,7 +21,8 @@ export interface JobConfig {
   }
 }
 
-let sidecarChild: Child | null = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let sidecarChild: any = null
 
 /**
  * Start a dubbing job by spawning the Python sidecar process
@@ -62,7 +63,8 @@ export async function startJob(config: JobConfig): Promise<void> {
   })
 
   sidecarChild = await command.spawn()
-  await command.stdin?.write(JSON.stringify(config) + '\n')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (command as any).stdin?.write(JSON.stringify(config) + '\n')
 }
 
 /**
