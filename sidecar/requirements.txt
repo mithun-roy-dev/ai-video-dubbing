@@ -1,0 +1,10 @@
+yt-dlp>=2024.1.1
+openai>=1.14.0
+requests>=2.31.0
+pydub>=0.25.1
+ffmpeg-python>=0.2.0
+torch>=2.1.0
+numpy>=1.24.0
+opencv-python>=4.8.0
+tqdm>=4.66.0
+elevenlabs>=1.0.0

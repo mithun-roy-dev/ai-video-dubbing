@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-ssr/
+*.local
+
+# Tauri build artifacts
+src-tauri/target/
+src-tauri/gen/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+sidecar/__pycache__/
+sidecar/steps/__pycache__/
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+
+# Temp/job files
+/tmp/
+videodub_jobs/
+
+# Model weights (too large for git — download on first use)
+sidecar/models/
+*.pth
+*.pt
+
+# OS
+Thumbs.db
+desktop.ini
