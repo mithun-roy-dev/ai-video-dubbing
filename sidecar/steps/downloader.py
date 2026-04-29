@@ -4,16 +4,21 @@ Handles YouTube URLs (via yt-dlp) and local file copies.
 """
 
 import os
+import sys
 import shutil
 import logging
 import subprocess
+import imageio_ffmpeg
 
 log = logging.getLogger(__name__)
+
+FFMPEG_EXE = imageio_ffmpeg.get_ffmpeg_exe()
 
 SUPPORTED_EXTENSIONS = {".mp4", ".mkv", ".mov", ".avi", ".webm"}
 
 
-def run(job_config: dict, temp_dir: str) -> str:
+def run(job_config: dict, temp_dir: str, progress_fn=None) -> str:
+
     youtube_url = job_config.get("youtube_url")
     video_path = job_config.get("video_path")
 
@@ -28,9 +33,10 @@ def run(job_config: dict, temp_dir: str) -> str:
 def _download_youtube(url: str, temp_dir: str) -> str:
     output_template = os.path.join(temp_dir, "input.%(ext)s")
     cmd = [
-        "yt-dlp",
+        sys.executable, "-m", "yt_dlp",
         "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
         "--merge-output-format", "mp4",
+        "--ffmpeg-location", FFMPEG_EXE,
         "-o", output_template,
         "--no-playlist",
         url,

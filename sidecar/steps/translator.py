@@ -49,16 +49,25 @@ def run(transcript: list, job_config: dict, progress_fn=None) -> list:
     if progress_fn:
         progress_fn(10, f"Sending {len(transcript)} segments to {provider} / {model}...")
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": json.dumps(segments_payload, ensure_ascii=False)},
-        ],
-        temperature=0.3,
-    )
+    messages = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": json.dumps(segments_payload, ensure_ascii=False)},
+    ]
+
+    log.debug(f"Translation Request Payload: {json.dumps(messages, ensure_ascii=False)}")
+
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.3,
+        )
+    except Exception as e:
+        log.error(f"Translation API Error: {e}")
+        raise
 
     raw = response.choices[0].message.content.strip()
+    log.debug(f"Translation Response Raw: {raw}")
 
     if progress_fn:
         progress_fn(80, "Parsing translation response...")

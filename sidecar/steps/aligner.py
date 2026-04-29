@@ -6,9 +6,14 @@ Concatenates all aligned clips into one full dubbed audio track.
 
 import os
 import logging
+import subprocess
+import re
 import ffmpeg
+import imageio_ffmpeg
 
 log = logging.getLogger(__name__)
+
+FFMPEG_EXE = imageio_ffmpeg.get_ffmpeg_exe()
 
 
 def run(tts_segments: list, transcript: list, temp_dir: str, progress_fn=None) -> str:
@@ -44,13 +49,23 @@ def run(tts_segments: list, transcript: list, temp_dir: str, progress_fn=None) -
     return dubbed_path
 
 
+def _get_duration(path: str) -> float:
+    try:
+        res = subprocess.run([FFMPEG_EXE, "-i", path], capture_output=True, text=True, encoding='utf-8', errors='ignore')
+        match = re.search(r"Duration:\s*(\d+):(\d+):(\d+\.\d+)", res.stderr)
+        if match:
+            h, m, s = match.groups()
+            return float(h)*3600 + float(m)*60 + float(s)
+    except Exception as e:
+        log.warning(f"Failed to get duration for {path}: {e}")
+    return 0.0
+
+
 def _align_segment(tts_path: str, out_path: str, original_duration: float, index: int):
     """Apply atempo filter to make TTS fit within original_duration."""
-    try:
-        probe = ffmpeg.probe(tts_path)
-        tts_duration = float(probe["format"]["duration"])
-    except Exception as e:
-        log.warning(f"Segment {index}: could not probe TTS file: {e}. Copying as-is.")
+    tts_duration = _get_duration(tts_path)
+    if tts_duration <= 0:
+        log.warning(f"Segment {index}: could not probe TTS file. Copying as-is.")
         import shutil
         shutil.copy2(tts_path, out_path)
         return
@@ -70,7 +85,7 @@ def _align_segment(tts_path: str, out_path: str, original_duration: float, index
                 ffmpeg.input(tts_path)
                 .output(out_path, t=original_duration, acodec="pcm_s16le", ar=16000, ac=1)
                 .overwrite_output()
-                .run(quiet=True)
+                .run(cmd=FFMPEG_EXE, quiet=True)
             )
         elif 0.5 <= ratio <= 2.0:
             # Single atempo
@@ -79,7 +94,7 @@ def _align_segment(tts_path: str, out_path: str, original_duration: float, index
                 .filter("atempo", ratio)
                 .output(out_path, acodec="pcm_s16le", ar=16000, ac=1)
                 .overwrite_output()
-                .run(quiet=True)
+                .run(cmd=FFMPEG_EXE, quiet=True)
             )
         else:
             # ratio > 2.0: chain two atempo filters
@@ -90,7 +105,7 @@ def _align_segment(tts_path: str, out_path: str, original_duration: float, index
                 .filter("atempo", r2)
                 .output(out_path, acodec="pcm_s16le", ar=16000, ac=1)
                 .overwrite_output()
-                .run(quiet=True)
+                .run(cmd=FFMPEG_EXE, quiet=True)
             )
     except ffmpeg.Error as e:
         log.error(f"Segment {index} atempo failed: {e.stderr.decode()}")
@@ -111,7 +126,7 @@ def _concatenate(paths: list, out_path: str, temp_dir: str):
             .input(list_file, format="concat", safe=0)
             .output(out_path, acodec="pcm_s16le", ar=16000, ac=1)
             .overwrite_output()
-            .run(quiet=True)
+            .run(cmd=FFMPEG_EXE, quiet=True)
         )
     except ffmpeg.Error as e:
         raise RuntimeError(f"Audio concatenation failed: {e.stderr.decode()}")

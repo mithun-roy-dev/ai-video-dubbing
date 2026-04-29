@@ -8,8 +8,11 @@ import os
 import logging
 import ffmpeg
 
+import imageio_ffmpeg
+
 log = logging.getLogger(__name__)
 
+FFMPEG_EXE = imageio_ffmpeg.get_ffmpeg_exe()
 
 def run(video_path: str, dubbed_audio: str, job_config: dict, temp_dir: str) -> str:
     target_lang = job_config.get("target_lang", "en")
@@ -34,7 +37,7 @@ def run(video_path: str, dubbed_audio: str, job_config: dict, temp_dir: str) -> 
                 shortest=None,           # Trim to shortest stream
             )
             .overwrite_output()
-            .run(quiet=True)
+            .run(cmd=FFMPEG_EXE, quiet=True)
         )
     except ffmpeg.Error as e:
         raise RuntimeError(f"Final compose failed: {e.stderr.decode()}")

@@ -1,18 +1,22 @@
 """
 Step 2 — Audio Extraction.
-Uses ffmpeg-python to extract mono 16kHz WAV (optimal for Whisper).
+Uses ffmpeg-python with the imageio-ffmpeg bundled binary to extract mono 16kHz WAV (optimal for Whisper).
 """
 
 import os
 import logging
 import ffmpeg
+import imageio_ffmpeg
 
 log = logging.getLogger(__name__)
+
+# Use the bundled ffmpeg binary from imageio-ffmpeg (no system ffmpeg needed)
+FFMPEG_EXE = imageio_ffmpeg.get_ffmpeg_exe()
 
 
 def run(video_path: str, temp_dir: str) -> str:
     audio_path = os.path.join(temp_dir, "audio.wav")
-    log.info(f"Extracting audio from: {video_path}")
+    log.info(f"Extracting audio from: {video_path} using {FFMPEG_EXE}")
 
     try:
         (
@@ -26,10 +30,11 @@ def run(video_path: str, temp_dir: str) -> str:
                 ac=1,              # Mono
             )
             .overwrite_output()
-            .run(quiet=True)
+            .run(cmd=FFMPEG_EXE, quiet=True)
         )
     except ffmpeg.Error as e:
-        raise RuntimeError(f"FFmpeg audio extraction failed: {e.stderr.decode()}")
+        stderr = e.stderr.decode() if e.stderr else str(e)
+        raise RuntimeError(f"FFmpeg audio extraction failed: {stderr}")
 
     if not os.path.exists(audio_path):
         raise RuntimeError("Audio extraction produced no output file.")

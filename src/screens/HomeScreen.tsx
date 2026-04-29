@@ -69,7 +69,13 @@ export function HomeScreen() {
   return (
     <main className="home-screen">
       <section className="input-panel card">
-        <DropZone onFileSelect={() => setValidationError(null)} />
+        <DropZone
+          onFileSelect={(path) => {
+            setValidationError(null)
+            setYoutubeUrl('') // Clear YouTube URL when file is selected
+          }}
+        />
+
 
         <div className="youtube-input-wrapper">
           <span className="youtube-input-label">Or paste YouTube URL</span>
@@ -80,9 +86,14 @@ export function HomeScreen() {
             placeholder="https://www.youtube.com/watch?v=..."
             value={youtubeUrl}
             onChange={(e) => {
-              setYoutubeUrl(e.target.value)
+              const url = e.target.value
+              setYoutubeUrl(url)
               setValidationError(null)
+              if (url.trim()) {
+                useAppStore.getState().setVideoPath(null) // Clear video path when URL is entered
+              }
             }}
+
           />
         </div>
       </section>

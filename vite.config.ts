@@ -36,7 +36,18 @@ export default defineConfig(async () => ({
         }
       : undefined,
     watch: {
-      ignored: ["**/src-tauri/**"],
+      ignored: [
+        "**/src-tauri/**", 
+        "**/log/**", 
+        "**/sidecar/**", 
+        "**/tmp/**",
+        "**/*.log",
+        "**/*.mp4",
+        "**/*.wav",
+        "**/*.json",
+        "**/__pycache__/**",
+        "**/.pytest_cache/**"
+      ],
     },
   },
 }));

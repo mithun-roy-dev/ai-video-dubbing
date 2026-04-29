@@ -7,8 +7,8 @@ import os
 import logging
 import traceback
 
-from .steps import downloader, extractor, transcriber, translator, tts, aligner, lipsync, composer
-from .utils import make_temp_dir, cleanup_temp_dir
+from steps import downloader, extractor, transcriber, translator, tts, aligner, lipsync, composer
+from utils import make_temp_dir, cleanup_temp_dir
 
 log = logging.getLogger(__name__)
 
@@ -87,14 +87,25 @@ def run_pipeline(job_config: dict, emit_fn=None) -> dict:
 
         # ── Step 8: Compose ──────────────────────────────────────────────────
         progress(8, "Compose", 0, "Composing final video...")
-        output_path = composer.run(final_video, dubbed_audio, job_config, temp_dir)
+        raw_output_path = composer.run(final_video, dubbed_audio, job_config, temp_dir)
+        
+        # Move the final output to the user's Videos folder so they can easily find it!
+        import shutil
+        home_dir = os.path.expanduser("~")
+        output_dir = os.path.join(home_dir, "Videos", "VideoDubAI")
+        os.makedirs(output_dir, exist_ok=True)
+        
+        final_filename = os.path.basename(raw_output_path)
+        safe_output_path = os.path.join(output_dir, final_filename)
+        shutil.move(raw_output_path, safe_output_path)
+        output_path = safe_output_path
+
         progress(8, "Compose", 100, "Final video ready.")
 
         # Calculate approximate cost from segment count + duration
         total_duration = sum(s.get("duration", 0) for s in transcript)
 
         result = {
-            "event": "done",
             "job_id": job_id,
             "output_path": output_path,
             "duration_sec": int(total_duration),

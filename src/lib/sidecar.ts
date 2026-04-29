@@ -1,4 +1,5 @@
-import { Command } from '@tauri-apps/plugin-shell'
+import { invoke } from '@tauri-apps/api/core'
+import { listen } from '@tauri-apps/api/event'
 import { useJobStore } from '../store/useJobStore'
 import type { ApiProviders } from '../store/useAppStore'
 
@@ -63,59 +64,86 @@ export function buildApiProvidersPayload(
   }
 }
 
+// Tauri event listener unsubscribe handles
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let sidecarChild: any = null
+let unlisteners: Array<() => void> = []
 
 /**
- * Start a dubbing job by spawning the Python sidecar process
- * and sending the job config via stdin (JSON-RPC over stdio).
+ * Start a dubbing job by invoking the Rust spawn_python command,
+ * which launches the Python sidecar and streams events back via Tauri events.
  */
 export async function startJob(config: JobConfig): Promise<void> {
   const store = useJobStore.getState()
   store.startJob(config.id)
 
-  const command = Command.sidecar('binaries/sidecar')
+  console.log('[Sidecar] Starting job:', config)
 
-  command.stdout.on('data', (line: string) => {
-    const trimmed = line.trim()
-    if (!trimmed) return
+  // Resolve script path: in dev, main.py is at <project-root>/sidecar/main.py
+  // The Tauri process CWD is src-tauri/, so we go up one level.
+  const scriptPath = '../sidecar/main.py'
+
+  // Cleanup any previous listeners
+  for (const unsub of unlisteners) unsub()
+  unlisteners = []
+
+  // Listen for stdout events from the Rust backend
+  const unlistenStdout = await listen<string>('sidecar-stdout', (event) => {
+    const line = event.payload.trim()
+    if (!line) return
+    console.log('[Sidecar STDOUT]:', line)
 
     try {
-      const event = JSON.parse(trimmed)
-
-      if (event.event === 'progress') {
-        store.updateProgress(event.step, event.step_name, event.pct, event.message)
+      const ev = JSON.parse(line)
+      if (ev.event === 'progress') {
+        store.updateProgress(ev.step, ev.step_name, ev.pct, ev.message)
       }
-      if (event.event === 'done') {
-        store.setResult(event)
-        sidecarChild = null
+      if (ev.event === 'done') {
+        store.setResult(ev)
       }
-      if (event.event === 'error') {
-        store.setError(event.message)
-        sidecarChild = null
+      if (ev.event === 'error') {
+        store.setError(ev.message)
       }
     } catch {
-      // Non-JSON debug lines — just append to log
-      store.appendLog(trimmed)
+      store.appendLog(line)
     }
   })
 
-  command.stderr.on('data', (line: string) => {
-    store.appendLog(`[stderr] ${line.trim()}`)
+  // Listen for stderr events
+  const unlistenStderr = await listen<string>('sidecar-stderr', (event) => {
+    const line = event.payload.trim()
+    console.error('[Sidecar STDERR]:', line)
+    store.appendLog(`[stderr] ${line}`)
   })
 
-  sidecarChild = await command.spawn()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (command as any).stdin?.write(JSON.stringify(config) + '\n')
+  // Listen for process exit
+  const unlistenExit = await listen('sidecar-exit', () => {
+    console.log('[Sidecar] Process exited')
+  })
+
+  unlisteners = [unlistenStdout, unlistenStderr, unlistenExit]
+
+  try {
+    await invoke('spawn_python', {
+      scriptPath,
+      configJson: JSON.stringify(config),
+    })
+    console.log('[Sidecar] spawn_python invoked successfully')
+  } catch (err) {
+    console.error('[Sidecar] Failed to spawn:', err)
+    store.setError(`Failed to start sidecar: ${err}`)
+  }
 }
 
 /**
- * Cancel the currently running sidecar process gracefully.
+ * Cancel the currently running sidecar process.
  */
 export async function cancelJob(): Promise<void> {
-  if (sidecarChild) {
-    await sidecarChild.kill()
-    sidecarChild = null
-    useJobStore.getState().cancelJob()
+  try {
+    await invoke('kill_python')
+  } catch (e) {
+    console.error('kill_python failed:', e)
   }
+  for (const unsub of unlisteners) unsub()
+  unlisteners = []
+  useJobStore.getState().cancelJob()
 }

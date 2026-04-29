@@ -78,7 +78,7 @@ export const PROVIDER_DEFS: Record<string, ProviderDef> = {
 export const STEP_PROVIDERS: Record<string, string[]> = {
   transcription: ['openrouter', 'kie_ai'],
   translation:   ['openrouter', 'kie_ai'],
-  tts:           ['kie_ai', 'elevenlabs'],
+  tts:           ['kie_ai', 'elevenlabs', 'openrouter'],
   lipsync:       ['wav2lip', 'synclabs'],
 }
 
@@ -86,9 +86,10 @@ export const STEP_PROVIDERS: Record<string, string[]> = {
 export const STEP_DEFAULT_MODELS: Record<string, Record<string, ModelOption[]>> = {
   transcription: {
     openrouter: [
-      { id: 'openai/whisper-large-v3', label: 'Whisper Large v3 (best)' },
+      { id: 'openai/gpt-4o-transcribe', label: 'GPT-4o Transcribe (best)' },
+      { id: 'openai/whisper-1', label: 'Whisper-1 (recommended)' },
+      { id: 'openai/whisper-large-v3', label: 'Whisper Large v3' },
       { id: 'openai/whisper-large-v2', label: 'Whisper Large v2' },
-      { id: 'openai/whisper-medium', label: 'Whisper Medium (faster)' },
     ],
     kie_ai: [
       { id: 'whisper-large-v3', label: 'Whisper Large v3' },
@@ -97,6 +98,7 @@ export const STEP_DEFAULT_MODELS: Record<string, Record<string, ModelOption[]>> 
   },
   translation: {
     openrouter: [
+      { id: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
       { id: 'google/gemini-2.0-flash-exp:free', label: 'Gemini 2.0 Flash (free)' },
       { id: 'google/gemini-flash-1.5', label: 'Gemini 1.5 Flash' },
       { id: 'openai/gpt-4o-mini', label: 'GPT-4o Mini' },
@@ -110,6 +112,10 @@ export const STEP_DEFAULT_MODELS: Record<string, Record<string, ModelOption[]>> 
     ],
   },
   tts: {
+    openrouter: [
+      { id: 'openai/gpt-4o-mini-tts-2025-12-15', label: 'GPT-4o Mini TTS' },
+      { id: 'google/gemini-3.1-flash-tts-preview', label: 'Gemini 3.1 Flash TTS' },
+    ],
     kie_ai: [
       { id: 'kie-tts-v1', label: 'KIE TTS v1 (multilingual)' },
       { id: 'kie-tts-v2', label: 'KIE TTS v2 (expressive)' },
@@ -184,29 +190,30 @@ const defaultSettings: Settings = {
 const defaultApiProviders: ApiProviders = {
   transcription: {
     provider: 'openrouter',
-    model: 'openai/whisper-large-v3',
+    model: 'openai/whisper-1',
     apiPath: 'https://openrouter.ai/api/v1',
-    apiKey: '',
+    apiKey: (import.meta.env.VITE_OPENROUTER_API_KEY as string) || '',
   },
   translation: {
     provider: 'openrouter',
     model: 'google/gemini-2.0-flash-exp:free',
     apiPath: 'https://openrouter.ai/api/v1',
-    apiKey: '',
+    apiKey: (import.meta.env.VITE_OPENROUTER_API_KEY as string) || '',
   },
   tts: {
     provider: 'kie_ai',
     model: 'kie-tts-v1',
     apiPath: 'https://api.kie.ai/v1',
-    apiKey: '',
+    apiKey: (import.meta.env.VITE_KIE_AI_API_KEY as string) || '',
   },
   lipsync: {
     provider: 'wav2lip',
     model: 'wav2lip',
     apiPath: '',
-    apiKey: '',
+    apiKey: (import.meta.env.VITE_SYNC_LABS_API_KEY as string) || '',
   },
 }
+
 
 // ─── Store ───────────────────────────────────────────────────────────────────
 
@@ -237,6 +244,29 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'videodub-app-store',
+      // On rehydration, if keys are empty, fill them from env vars
+      onRehydrateStorage: () => (state) => {
+        if (!state) return
+        const providers = state.apiProviders
+        let changed = false
+
+        if (!providers.transcription.apiKey && import.meta.env.VITE_OPENROUTER_API_KEY) {
+          providers.transcription.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
+          changed = true
+        }
+        if (!providers.translation.apiKey && import.meta.env.VITE_OPENROUTER_API_KEY) {
+          providers.translation.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
+          changed = true
+        }
+        if (!providers.tts.apiKey && import.meta.env.VITE_KIE_AI_API_KEY) {
+          providers.tts.apiKey = import.meta.env.VITE_KIE_AI_API_KEY
+          changed = true
+        }
+
+        if (changed) {
+          state.apiProviders = { ...providers }
+        }
+      },
       partialize: (state) => ({
         mode: state.mode,
         settings: state.settings,

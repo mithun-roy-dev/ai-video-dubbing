@@ -9,10 +9,18 @@ import json
 import logging
 from pipeline import run_pipeline
 
+import os
+
+# Ensure log directory exists
+os.makedirs("log", exist_ok=True)
+
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    stream=sys.stderr,  # Keep stderr for internal logs; stdout is for JSON-RPC
+    level=logging.DEBUG, # Use DEBUG to capture more details
+    format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stderr),  # Keep stderr for internal logs; stdout is for JSON-RPC
+        logging.FileHandler("log/debug_log.txt", encoding="utf-8")
+    ]
 )
 log = logging.getLogger(__name__)
 
@@ -52,7 +60,10 @@ def dispatch(request: dict):
 
 def main():
     log.info("Sidecar started — waiting for JSON-RPC commands on stdin")
-    for raw_line in sys.stdin:
+    while True:
+        raw_line = sys.stdin.readline()
+        if not raw_line:
+            break
         line = raw_line.strip()
         if not line:
             continue
