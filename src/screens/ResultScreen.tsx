@@ -2,6 +2,7 @@ import { useJobStore } from '../store/useJobStore'
 import { getLanguageName } from '../lib/languages'
 import { useAppStore } from '../store/useAppStore'
 import { revealItemInDir } from '@tauri-apps/plugin-opener'
+import { convertFileSrc } from '@tauri-apps/api/core'
 
 export function ResultScreen() {
   const { result, resetJob } = useJobStore()
@@ -17,38 +18,84 @@ export function ResultScreen() {
     }
   }
 
+  const videoSrc = convertFileSrc(result.outputPath)
+
   return (
     <main className="result-screen">
-      <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-        <h1 style={{ fontSize: '48px', marginBottom: '10px' }}>✅</h1>
-        <h2 style={{ fontSize: '24px', color: '#fff' }}>Dubbing Complete!</h2>
-        <p style={{ opacity: 0.7, marginBottom: '30px' }}>
-          Your video was saved to your <strong>Videos/VideoDubAI</strong> folder.
-        </p>
-
-        <div className="card" style={{ maxWidth: '400px', margin: '0 auto 30px', textAlign: 'left', padding: '20px' }}>
-          <p style={{ margin: '5px 0' }}><strong>From:</strong> {getLanguageName(sourceLang)}</p>
-          <p style={{ margin: '5px 0' }}><strong>To:</strong> {getLanguageName(targetLang)}</p>
-          <p style={{ margin: '5px 0', fontSize: '12px', opacity: 0.6, wordBreak: 'break-all' }}>
-            <strong>Path:</strong> {result.outputPath}
+      <div className="result-container">
+        <div className="result-header">
+          <div className="success-badge">
+            <span className="success-check">✓</span>
+          </div>
+          <h2 className="result-title">Dubbing Complete!</h2>
+          <p className="result-subtitle">
+            Your dubbed video is ready. We've saved it to your selected output directory.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-          <button 
-            className="btn btn--primary" 
-            onClick={handleOpenFolder}
-            style={{ padding: '12px 24px' }}
-          >
-            📂 Open in Explorer
-          </button>
-          <button 
-            className="btn btn--ghost" 
-            onClick={resetJob}
-            style={{ padding: '12px 24px' }}
-          >
-            🔄 Dub Another
-          </button>
+        <div className="result-grid">
+          {/* Video Preview */}
+          <div className="result-video-card card">
+            <div className="video-player-container">
+              <video 
+                src={videoSrc} 
+                controls 
+                className="result-video-player"
+                poster="/preview-placeholder.png"
+              />
+            </div>
+            <div className="video-card-footer">
+              <div className="file-info">
+                <span className="file-icon">🎬</span>
+                <span className="file-path" title={result.outputPath}>
+                  {result.outputPath.split(/[\\/]/).pop()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Job Summary */}
+          <div className="result-info-panel">
+            <div className="summary-card card">
+              <h3 className="summary-title">Job Summary</h3>
+              <div className="summary-list">
+                <div className="summary-item">
+                  <span className="summary-label">Source Language</span>
+                  <span className="summary-value">{getLanguageName(sourceLang)}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Target Language</span>
+                  <span className="summary-value">{getLanguageName(targetLang)}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Duration</span>
+                  <span className="summary-value">{result.durationSec}s</span>
+                </div>
+                <div className="summary-divider" />
+                <div className="summary-item summary-item--highlight">
+                  <span className="summary-label">Total Cost</span>
+                  <span className="summary-value cost-value">
+                    ${result.costUsd.toFixed(3)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="result-actions">
+              <button 
+                className="btn btn--primary btn--full" 
+                onClick={handleOpenFolder}
+              >
+                📂 Open in Explorer
+              </button>
+              <button 
+                className="btn btn--ghost btn--full" 
+                onClick={resetJob}
+              >
+                🔄 Dub Another Video
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </main>

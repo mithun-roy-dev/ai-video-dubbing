@@ -14,20 +14,16 @@
     "dialog:allow-save",
     "fs:default",
     {
-      "identifier": "fs:allow-read-file",
-      "allow": [{ "path": "$TEMP/**" }]
+      "identifier": "fs:allow-read",
+      "allow": [{ "path": "**" }]
     },
     {
-      "identifier": "fs:allow-write-file",
-      "allow": [{ "path": "$TEMP/**" }]
-    },
-    {
-      "identifier": "fs:allow-copy-file",
-      "allow": [{ "path": "$TEMP/**" }]
+      "identifier": "fs:allow-write",
+      "allow": [{ "path": "**" }]
     },
     {
       "identifier": "fs:allow-exists",
-      "allow": [{ "path": "$TEMP/**" }]
+      "allow": [{ "path": "**" }]
     },
 
     {

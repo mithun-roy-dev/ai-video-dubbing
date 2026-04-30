@@ -456,3 +456,864 @@ FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\
 2026-04-30 12:19:08,195 [INFO] [pipeline] === Pipeline DONE: job_1777529935556 → M:\download-ch\job_1777529935556_dubbed_en.mp4 ===
 2026-04-30 12:19:08,231 [DEBUG] [httpcore.connection] close.started
 2026-04-30 12:19:08,232 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:32:25,186 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:32:25,187 [INFO] [pipeline] === Pipeline START: job_1777530742611 ===
+2026-04-30 12:32:25,189 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777530742611
+2026-04-30 12:32:25,189 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:32:25,201 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777530742611\input.mp4
+2026-04-30 12:32:25,201 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:32:25,201 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777530742611\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:32:25,497 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777530742611\audio.wav (0.2 MB)
+2026-04-30 12:32:25,497 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:32:25,497 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:32:25,497 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=bn
+2026-04-30 12:32:25,497 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:32:25,509 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:32:25,509 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "bn"}
+2026-04-30 12:32:25,516 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:32:26,860 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 401 None
+2026-04-30 12:32:26,861 [DEBUG] [steps.transcriber] OpenRouter Response Status: 401
+2026-04-30 12:32:26,861 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"User not found.","code":401}}...
+2026-04-30 12:32:26,861 [ERROR] [steps.transcriber] OpenRouter Error 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:32:26,861 [WARNING] [steps.transcriber] Transcription attempt 1 failed: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:32:31,872 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:32:31,872 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "bn"}
+2026-04-30 12:32:31,874 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:32:33,547 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 401 None
+2026-04-30 12:32:33,547 [DEBUG] [steps.transcriber] OpenRouter Response Status: 401
+2026-04-30 12:32:33,547 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"User not found.","code":401}}...
+2026-04-30 12:32:33,548 [ERROR] [steps.transcriber] OpenRouter Error 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:32:33,548 [WARNING] [steps.transcriber] Transcription attempt 2 failed: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:32:33,553 [ERROR] [pipeline] Pipeline error: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+2026-04-30 12:32:33,553 [ERROR] [__main__] Pipeline error
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\main.py", line 49, in dispatch
+    result = run_pipeline({"id": job_id, **params}, emit_fn=emit)
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:33:56,175 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:33:56,175 [INFO] [pipeline] === Pipeline START: job_1777530834554 ===
+2026-04-30 12:33:56,176 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777530834554
+2026-04-30 12:33:56,176 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:33:56,186 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777530834554\input.mp4
+2026-04-30 12:33:56,187 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:33:56,187 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777530834554\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:33:56,280 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777530834554\audio.wav (0.2 MB)
+2026-04-30 12:33:56,281 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:33:56,281 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:33:56,281 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:33:56,281 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:33:56,289 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:33:56,289 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:33:56,294 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:33:57,760 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 401 None
+2026-04-30 12:33:57,761 [DEBUG] [steps.transcriber] OpenRouter Response Status: 401
+2026-04-30 12:33:57,761 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"User not found.","code":401}}...
+2026-04-30 12:33:57,761 [ERROR] [steps.transcriber] OpenRouter Error 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:33:57,761 [WARNING] [steps.transcriber] Transcription attempt 1 failed: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:34:02,764 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:34:02,765 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:34:02,767 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:34:03,888 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 401 None
+2026-04-30 12:34:03,888 [DEBUG] [steps.transcriber] OpenRouter Response Status: 401
+2026-04-30 12:34:03,888 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"User not found.","code":401}}...
+2026-04-30 12:34:03,888 [ERROR] [steps.transcriber] OpenRouter Error 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:34:03,888 [WARNING] [steps.transcriber] Transcription attempt 2 failed: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:34:03,896 [ERROR] [pipeline] Pipeline error: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+2026-04-30 12:34:03,896 [ERROR] [__main__] Pipeline error
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\main.py", line 49, in dispatch
+    result = run_pipeline({"id": job_id, **params}, emit_fn=emit)
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:38:28,604 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:38:28,607 [INFO] [pipeline] === Pipeline START: job_1777531106275 ===
+2026-04-30 12:38:28,608 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531106275
+2026-04-30 12:38:28,608 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:38:28,622 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531106275\input.mp4
+2026-04-30 12:38:28,623 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:38:28,624 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531106275\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:38:28,974 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531106275\audio.wav (0.6 MB)
+2026-04-30 12:38:28,974 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:38:28,974 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:38:28,974 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:38:28,974 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:38:28,980 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:38:28,981 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:38:28,989 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:38:31,255 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 401 None
+2026-04-30 12:38:31,256 [DEBUG] [steps.transcriber] OpenRouter Response Status: 401
+2026-04-30 12:38:31,256 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"User not found.","code":401}}...
+2026-04-30 12:38:31,256 [ERROR] [steps.transcriber] OpenRouter Error 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:38:31,256 [WARNING] [steps.transcriber] Transcription attempt 1 failed: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:38:36,263 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:38:36,263 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:38:36,267 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:38:38,278 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 401 None
+2026-04-30 12:38:38,278 [DEBUG] [steps.transcriber] OpenRouter Response Status: 401
+2026-04-30 12:38:38,279 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"User not found.","code":401}}...
+2026-04-30 12:38:38,279 [ERROR] [steps.transcriber] OpenRouter Error 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:38:38,279 [WARNING] [steps.transcriber] Transcription attempt 2 failed: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:38:38,283 [ERROR] [pipeline] Pipeline error: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+2026-04-30 12:38:38,284 [ERROR] [__main__] Pipeline error
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\main.py", line 49, in dispatch
+    result = run_pipeline({"id": job_id, **params}, emit_fn=emit)
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 12:39:51,029 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:39:51,033 [INFO] [pipeline] === Pipeline START: job_1777531188846 ===
+2026-04-30 12:39:51,034 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531188846
+2026-04-30 12:39:51,034 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:39:51,058 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531188846\input.mp4
+2026-04-30 12:39:51,059 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:39:51,059 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531188846\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:39:51,379 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531188846\audio.wav (0.6 MB)
+2026-04-30 12:39:51,380 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:39:51,380 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:39:51,380 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:39:51,380 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:39:51,397 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:39:51,398 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:39:51,407 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:39:55,026 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:39:55,028 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:39:55,028 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"My name is Kamal Lesna. I am from Gorishaw. I completed my schooling from Chidam. Then I completed my higher secondary from Gorishaw. After that I completed my graduation.","usage":{"seconds":21,"cost":0.0021}}...
+2026-04-30 12:39:55,029 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:39:55,031 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:39:55,031 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:39:55,031 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:39:55,330 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:39:55,330 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:39:55,330 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"My name is Kamal Lesna. I am from Gorishaw. I completed my schooling from Chidam. Then I completed my higher secondary from Gorishaw. After that I completed my graduation.\"}]"}]
+2026-04-30 12:39:55,802 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-c5375cf8-bb92-4298-843c-19ccf3d1fb22', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "My name is Kamal Lesna. I am from Gorishaw. I completed my schooling from Chidam. Then I completed my higher secondary from Gorishaw. After that I completed my graduation."}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:39:55,849 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:39:55,849 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:39:55,927 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002056E9A8830>
+2026-04-30 12:39:55,927 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x000002056D0CAE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:39:56,003 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002056E92C690>
+2026-04-30 12:39:56,004 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:39:56,004 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:39:56,005 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:39:56,005 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:39:56,005 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:39:58,556 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:40:13 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777531210-SNTwiALGfW9Rx7UxRJ8L'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f448db45ae3ce59-SIN')])
+2026-04-30 12:39:58,557 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:39:58,557 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:39:58,862 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:39:58,862 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:39:58,862 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:39:58,863 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:40:13 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777531210-SNTwiALGfW9Rx7UxRJ8L', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f448db45ae3ce59-SIN'})
+2026-04-30 12:39:58,863 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:39:58,874 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "আমার নাম কমল লেসনা। আমি গরিশাও থেকে এসেছি। আমি চিদাম থেকে আমার স্কুলিং শেষ করেছি। তারপর আমি গরিশাও থেকে উচ্চ মাধ্যমিক শেষ করেছি। এরপর আমি আমার স্নাতক শেষ করেছি।"}
+]
+2026-04-30 12:39:58,875 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:39:58,875 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:39:58,875 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:39:58,875 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:39:58,876 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:39:58,876 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:39:58,876 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'আমার নাম কমল লেসনা। আমি গরিশাও থেকে এসেছি। আমি চিদাম থেকে আমার স্কুলিং শেষ করেছি। তারপর আমি গরিশাও থেকে উচ্চ মাধ্যমিক শেষ করেছি। এরপর আমি আমার স্নাতক শেষ করেছি।', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:39:58,877 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:40:01,300 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:40:02,725 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:40:02,727 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:40:02,728 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:40:02,728 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:40:02,798 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:40:02,912 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:40:02,912 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531188846\dubbed_full.wav
+2026-04-30 12:40:02,912 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:40:02,912 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:40:02,912 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531188846\job_1777531188846_dubbed_bn.mp4
+2026-04-30 12:40:03,229 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531188846\job_1777531188846_dubbed_bn.mp4 (16.6 MB)
+2026-04-30 12:40:03,229 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:40:03,243 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:40:03,244 [INFO] [pipeline] === Pipeline DONE: job_1777531188846 → M:\download-ch\job_1777531188846_dubbed_bn.mp4 ===
+2026-04-30 12:40:03,282 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:40:03,282 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:40:25,455 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:40:25,455 [INFO] [pipeline] === Pipeline START: job_1777531223999 ===
+2026-04-30 12:40:25,455 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531223999
+2026-04-30 12:40:25,456 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:40:25,484 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531223999\input.mp4
+2026-04-30 12:40:25,484 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:40:25,484 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531223999\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:40:25,598 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531223999\audio.wav (0.6 MB)
+2026-04-30 12:40:25,598 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:40:25,598 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:40:25,598 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:40:25,598 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:40:25,604 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:40:25,604 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:40:25,609 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:40:28,445 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:40:28,446 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:40:28,446 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"My name is Kamal Lesna. I am from Gorishaw. I completed my schooling from Chidam. Then I completed my higher secondary from Gorishaw. After that I completed my graduation.","usage":{"seconds":21,"cost":0.0021}}...
+2026-04-30 12:40:28,446 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:40:28,447 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:40:28,448 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:40:28,448 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:40:28,716 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:40:28,716 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:40:28,716 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"My name is Kamal Lesna. I am from Gorishaw. I completed my schooling from Chidam. Then I completed my higher secondary from Gorishaw. After that I completed my graduation.\"}]"}]
+2026-04-30 12:40:29,030 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-aa6c3c77-79af-47f9-bcd5-8fe2d7eed4b4', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "My name is Kamal Lesna. I am from Gorishaw. I completed my schooling from Chidam. Then I completed my higher secondary from Gorishaw. After that I completed my graduation."}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:40:29,077 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:40:29,078 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:40:29,143 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001CB6EB78830>
+2026-04-30 12:40:29,143 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x000001CB6D29AE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:40:29,216 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001CB6EAFC690>
+2026-04-30 12:40:29,217 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:40:29,217 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:40:29,218 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:40:29,218 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:40:29,218 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:40:39,295 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:40:54 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777531244-MbKgvUrGfFKQcBppr5BY'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f448e83ed3555de-SIN')])
+2026-04-30 12:40:39,297 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:40:39,297 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:40:40,548 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:40:40,549 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:40:40,549 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:40:40,550 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:40:54 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777531244-MbKgvUrGfFKQcBppr5BY', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f448e83ed3555de-SIN'})
+2026-04-30 12:40:40,550 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:40:40,560 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "আমার নাম কমল লেসনা। আমি গরিশাও থেকে এসেছি। আমি চিদাম থেকে আমার স্কুলিং শেষ করেছি। তারপর আমি গরিশাও থেকে আমার উচ্চ মাধ্যমিক শেষ করেছি। এরপর আমি আমার স্নাতক শেষ করেছি।"}
+]
+2026-04-30 12:40:40,561 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:40:40,561 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:40:40,561 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:40:40,562 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:40:40,562 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:40:40,562 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:40:40,563 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'আমার নাম কমল লেসনা। আমি গরিশাও থেকে এসেছি। আমি চিদাম থেকে আমার স্কুলিং শেষ করেছি। তারপর আমি গরিশাও থেকে আমার উচ্চ মাধ্যমিক শেষ করেছি। এরপর আমি আমার স্নাতক শেষ করেছি।', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:40:40,564 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:40:42,645 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:40:44,341 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:40:44,343 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:40:44,343 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:40:44,343 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:40:44,404 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:40:44,490 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:40:44,491 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531223999\dubbed_full.wav
+2026-04-30 12:40:44,491 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:40:44,491 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:40:44,491 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531223999\job_1777531223999_dubbed_bn.mp4
+2026-04-30 12:40:44,856 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531223999\job_1777531223999_dubbed_bn.mp4 (15.5 MB)
+2026-04-30 12:40:44,856 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:40:44,868 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:40:44,868 [INFO] [pipeline] === Pipeline DONE: job_1777531223999 → M:\download-ch\job_1777531223999_dubbed_bn.mp4 ===
+2026-04-30 12:40:44,904 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:40:44,905 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:45:02,617 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:45:02,618 [INFO] [pipeline] === Pipeline START: job_1777531500531 ===
+2026-04-30 12:45:02,619 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531500531
+2026-04-30 12:45:02,619 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:45:02,630 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531500531\input.mp4
+2026-04-30 12:45:02,631 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:45:02,631 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531500531\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:45:02,966 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531500531\audio.wav (0.3 MB)
+2026-04-30 12:45:02,966 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:45:02,966 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:45:02,966 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:45:02,966 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:45:02,973 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:45:02,973 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:45:02,979 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:45:05,736 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:45:05,743 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:45:05,743 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.","usage":{"seconds":11,"cost":0.0010999999999999998}}...
+2026-04-30 12:45:05,743 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:45:05,745 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:45:05,746 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:45:05,746 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:45:06,068 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:45:06,068 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:45:06,069 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into hi.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.\"}]"}]
+2026-04-30 12:45:06,478 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-417efc25-72d4-4529-8161-09854d400b46', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into hi.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you."}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:45:06,521 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:45:06,521 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:45:06,617 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000022044448830>
+2026-04-30 12:45:06,618 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x0000022042BAAE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:45:06,694 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x00000220443CC690>
+2026-04-30 12:45:06,694 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:45:06,695 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:45:06,695 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:45:06,696 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:45:06,696 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:45:07,842 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:45:22 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777531521-z4k6y7jx47SQ7GWqWFfs'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f44954a284ffd1f-SIN')])
+2026-04-30 12:45:07,843 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:45:07,844 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:45:07,888 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:45:07,889 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:45:07,889 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:45:07,890 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:45:22 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777531521-z4k6y7jx47SQ7GWqWFfs', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f44954a284ffd1f-SIN'})
+2026-04-30 12:45:07,890 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:45:07,898 [DEBUG] [steps.translator] Translation Response Raw: [
+  {
+    "index": 0,
+    "text": "मेरा नाम मिथुन कुमार रॉय है, मैं वर्तमान में आईसीटी विभाग, जिला कार्यालय, भूषण में सहायक नेटवर्क इंजीनियर के रूप में कार्यरत हूँ। धन्यवाद।"
+  }
+]
+2026-04-30 12:45:07,900 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:45:07,900 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:45:07,900 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:45:07,900 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:45:07,900 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:45:07,900 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:45:07,901 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'मेरा नाम मिथुन कुमार रॉय है, मैं वर्तमान में आईसीटी विभाग, जिला कार्यालय, भूषण में सहायक नेटवर्क इंजीनियर के रूप में कार्यरत हूँ। धन्यवाद।', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:45:07,902 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:45:09,675 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:45:11,143 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:45:11,144 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:45:11,144 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:45:11,145 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:45:11,210 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:45:11,305 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:45:11,305 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531500531\dubbed_full.wav
+2026-04-30 12:45:11,305 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:45:11,305 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:45:11,305 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531500531\job_1777531500531_dubbed_hi.mp4
+2026-04-30 12:45:11,587 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531500531\job_1777531500531_dubbed_hi.mp4 (11.4 MB)
+2026-04-30 12:45:11,587 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:45:11,597 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:45:11,598 [INFO] [pipeline] === Pipeline DONE: job_1777531500531 → M:\download-ch\job_1777531500531_dubbed_hi.mp4 ===
+2026-04-30 12:45:11,633 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:45:11,634 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:45:52,363 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:45:52,364 [INFO] [pipeline] === Pipeline START: job_1777531550634 ===
+2026-04-30 12:45:52,364 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531550634
+2026-04-30 12:45:52,364 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:45:52,378 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531550634\input.mp4
+2026-04-30 12:45:52,378 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:45:52,378 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531550634\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:45:53,026 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531550634\audio.wav (0.3 MB)
+2026-04-30 12:45:53,026 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:45:53,026 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:45:53,027 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:45:53,027 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:45:53,030 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:45:53,031 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:45:53,041 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:45:55,616 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:45:55,619 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:45:55,619 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.","usage":{"seconds":11,"cost":0.0010999999999999998}}...
+2026-04-30 12:45:55,619 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:45:55,621 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:45:55,621 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:45:55,621 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:45:55,898 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:45:55,898 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:45:55,898 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into de.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.\"}]"}]
+2026-04-30 12:45:56,309 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-2ebaff8b-5cbd-4092-bed1-7edd5dd5b934', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into de.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you."}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:45:56,349 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:45:56,349 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:45:56,422 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000017F7C138830>
+2026-04-30 12:45:56,422 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x0000017F7A89AE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:45:56,498 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000017F7C0BC690>
+2026-04-30 12:45:56,498 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:45:56,499 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:45:56,499 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:45:56,499 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:45:56,499 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:45:57,625 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:46:12 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777531571-mTfwPc3OokPgUAcIjnl3'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f44968178ad0517-SIN')])
+2026-04-30 12:45:57,626 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:45:57,626 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:45:57,732 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:45:57,732 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:45:57,732 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:45:57,734 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:46:12 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777531571-mTfwPc3OokPgUAcIjnl3', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f44968178ad0517-SIN'})
+2026-04-30 12:45:57,734 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:45:57,743 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "Mein Name ist Mithun Kumar Roy. Ich arbeite derzeit als stellvertretender Netzwerktechniker hier in der Abteilung für IKT, Bezirksamt, Bhushan. Danke schön."}
+]
+2026-04-30 12:45:57,743 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:45:57,744 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:45:57,744 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:45:57,744 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:45:57,744 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:45:57,744 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:45:57,744 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'Mein Name ist Mithun Kumar Roy. Ich arbeite derzeit als stellvertretender Netzwerktechniker hier in der Abteilung für IKT, Bezirksamt, Bhushan. Danke schön.', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:45:57,745 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:46:00,004 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:46:01,290 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:46:01,292 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:46:01,292 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:46:01,292 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:46:01,364 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:46:01,440 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:46:01,440 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531550634\dubbed_full.wav
+2026-04-30 12:46:01,441 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:46:01,441 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:46:01,441 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531550634\job_1777531550634_dubbed_de.mp4
+2026-04-30 12:46:01,710 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531550634\job_1777531550634_dubbed_de.mp4 (11.4 MB)
+2026-04-30 12:46:01,710 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:46:01,720 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:46:01,720 [INFO] [pipeline] === Pipeline DONE: job_1777531550634 → M:\download-ch\job_1777531550634_dubbed_de.mp4 ===
+2026-04-30 12:46:01,758 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:46:01,759 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:46:54,940 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:46:54,941 [INFO] [pipeline] === Pipeline START: job_1777531612977 ===
+2026-04-30 12:46:54,942 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531612977
+2026-04-30 12:46:54,942 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:46:54,958 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531612977\input.mp4
+2026-04-30 12:46:54,958 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:46:54,958 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531612977\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:46:55,212 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531612977\audio.wav (0.3 MB)
+2026-04-30 12:46:55,213 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:46:55,213 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:46:55,213 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:46:55,213 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:46:55,219 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:46:55,219 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:46:55,225 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:46:59,340 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:46:59,343 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:46:59,343 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.","usage":{"seconds":11,"cost":0.0010999999999999998}}...
+2026-04-30 12:46:59,343 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:46:59,344 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:46:59,345 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:46:59,345 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:46:59,639 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:46:59,639 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:46:59,639 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into ar.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.\"}]"}]
+2026-04-30 12:47:00,166 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-8d0c052c-3e62-420f-bb86-1bb123cdf721', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into ar.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you."}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:47:00,210 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:47:00,210 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:47:00,289 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000022994AE8830>
+2026-04-30 12:47:00,289 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x0000022993246E70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:47:00,373 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000022994A6C690>
+2026-04-30 12:47:00,374 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:47:00,375 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:47:00,375 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:47:00,375 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:47:00,375 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:47:01,450 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:47:16 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777531635-OB0Fa1sEZPmg8jq4Tp8e'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f449810b98a9d05-SIN')])
+2026-04-30 12:47:01,451 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:47:01,451 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:47:01,623 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:47:01,624 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:47:01,624 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:47:01,625 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:47:16 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777531635-OB0Fa1sEZPmg8jq4Tp8e', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f449810b98a9d05-SIN'})
+2026-04-30 12:47:01,626 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:47:01,636 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "اسمي ميثون كومار روي، أعمل حاليًا مهندس شبكات مساعد هنا في قسم تكنولوجيا المعلومات والاتصالات، مكتب المقاطعة، بوشان. شكرًا لكم."}
+]
+2026-04-30 12:47:01,638 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:47:01,638 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:47:01,638 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:47:01,638 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:47:01,638 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:47:01,638 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:47:01,639 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'اسمي ميثون كومار روي، أعمل حاليًا مهندس شبكات مساعد هنا في قسم تكنولوجيا المعلومات والاتصالات، مكتب المقاطعة، بوشان. شكرًا لكم.', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:47:01,640 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:47:03,886 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:47:05,351 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:47:05,359 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:47:05,359 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:47:05,360 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:47:05,420 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:47:05,504 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:47:05,504 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531612977\dubbed_full.wav
+2026-04-30 12:47:05,504 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:47:05,504 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:47:05,504 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531612977\job_1777531612977_dubbed_ar.mp4
+2026-04-30 12:47:05,789 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531612977\job_1777531612977_dubbed_ar.mp4 (11.4 MB)
+2026-04-30 12:47:05,789 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:47:05,798 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:47:05,798 [INFO] [pipeline] === Pipeline DONE: job_1777531612977 → M:\download-ch\job_1777531612977_dubbed_ar.mp4 ===
+2026-04-30 12:47:05,835 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:47:05,836 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:47:57,574 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:47:57,575 [INFO] [pipeline] === Pipeline START: job_1777531675903 ===
+2026-04-30 12:47:57,576 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531675903
+2026-04-30 12:47:57,576 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:47:57,589 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531675903\input.mp4
+2026-04-30 12:47:57,590 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:47:57,590 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531675903\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:47:57,935 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531675903\audio.wav (0.3 MB)
+2026-04-30 12:47:57,935 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:47:57,935 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:47:57,935 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:47:57,935 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:47:57,940 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:47:57,940 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:47:57,945 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:47:59,990 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:47:59,993 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:47:59,993 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.","usage":{"seconds":11,"cost":0.0010999999999999998}}...
+2026-04-30 12:47:59,993 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:47:59,995 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:47:59,995 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:47:59,996 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:48:00,310 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:48:00,311 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:48:00,312 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.\"}]"}]
+2026-04-30 12:48:00,775 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-82245f41-fd57-4262-9a61-728f5fd16a73', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you."}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:48:00,816 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:48:00,817 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:48:00,909 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000024F672C0830>
+2026-04-30 12:48:00,910 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x0000024F65A2AE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:48:00,985 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000024F6724C690>
+2026-04-30 12:48:00,985 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:48:00,986 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:48:00,986 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:48:00,986 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:48:00,986 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:48:02,091 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:48:16 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777531695-Egm36Zife3nTRgElWG2A'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f44998b8d11fe87-SIN')])
+2026-04-30 12:48:02,092 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:48:02,092 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:48:02,230 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:48:02,230 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:48:02,231 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:48:02,232 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:48:16 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777531695-Egm36Zife3nTRgElWG2A', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f44998b8d11fe87-SIN'})
+2026-04-30 12:48:02,233 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:48:02,241 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "আমার নাম মিঠুন কুমার রায়। বর্তমানে আমি সহকারী নেটওয়ার্ক ইঞ্জিনিয়ার হিসেবে তথ্য ও যোগাযোগ প্রযুক্তি অধিদপ্তর, জেলা কার্যালয়, ভূঞাপুরে কর্মরত আছি। ধন্যবাদ।"}
+]
+2026-04-30 12:48:02,242 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:48:02,242 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:48:02,242 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:48:02,242 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:48:02,242 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:48:02,242 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:48:02,243 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'আমার নাম মিঠুন কুমার রায়। বর্তমানে আমি সহকারী নেটওয়ার্ক ইঞ্জিনিয়ার হিসেবে তথ্য ও যোগাযোগ প্রযুক্তি অধিদপ্তর, জেলা কার্যালয়, ভূঞাপুরে কর্মরত আছি। ধন্যবাদ।', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:48:02,245 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:48:04,255 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:48:05,913 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:48:05,914 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:48:05,914 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:48:05,914 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:48:05,989 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:48:06,071 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:48:06,072 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531675903\dubbed_full.wav
+2026-04-30 12:48:06,072 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:48:06,072 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:48:06,072 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531675903\job_1777531675903_dubbed_bn.mp4
+2026-04-30 12:48:06,343 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531675903\job_1777531675903_dubbed_bn.mp4 (11.4 MB)
+2026-04-30 12:48:06,343 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:48:06,352 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:48:06,352 [INFO] [pipeline] === Pipeline DONE: job_1777531675903 → M:\download-ch\job_1777531675903_dubbed_bn.mp4 ===
+2026-04-30 12:48:06,391 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:48:06,392 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:49:08,538 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:49:08,539 [INFO] [pipeline] === Pipeline START: job_1777531746600 ===
+2026-04-30 12:49:08,539 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531746600
+2026-04-30 12:49:08,539 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:49:08,556 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531746600\input.mp4
+2026-04-30 12:49:08,556 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:49:08,556 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531746600\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:49:09,148 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531746600\audio.wav (11.3 MB)
+2026-04-30 12:49:09,149 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:49:09,149 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:49:09,149 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 12:49:09,149 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:49:09,211 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:49:09,211 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 12:49:09,254 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:49:51,733 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:49:51,740 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:49:51,740 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"You know that feeling when you see a video and the background is just mind-blowing? Well, guess what? You're about to discover how to create those jaw-dropping backgrounds yourself without spending any money or having to use a green screen. Sounds intriguing, right? Also, this is just a regular living room, yet with the magic of AI, I can transform this into something extraordinary in mere seconds. Want a mural background? Or a statue of liberty? Maybe even turn this place into a cozy cafe? With AI, the options are endless. And here's the thing, everything within this frame is real and the rest is all AI's work of art. So buckle up, as I'm going to show you the best way to accomplish this. I'm Bryan from Upstake Learners, and let's get started. First up, we need to shoot the video. Before we begin, there are a couple of key things that you have to keep in mind. Number one, make sure you have consistent lighting and there's no shadow or disturbance. And for top-notch results, d...
+2026-04-30 12:49:51,740 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:49:51,747 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:49:51,747 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:49:51,747 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:49:52,064 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:49:52,064 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:49:52,065 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"You know that feeling when you see a video and the background is just mind-blowing? Well, guess what? You're about to discover how to create those jaw-dropping backgrounds yourself without spending any money or having to use a green screen. Sounds intriguing, right? Also, this is just a regular living room, yet with the magic of AI, I can transform this into something extraordinary in mere seconds. Want a mural background? Or a statue of liberty? Maybe even turn this place into a cozy cafe? With AI, the options are endless. And here's the thing, everything within this frame is real and the rest is all AI's work of art. So buckle up, as I'm going to show you the best way to accomplish this. I'm Bryan from Upstake Learners, and let's get started. First up, we need to shoot the video. Before we begin, there are a couple of key things that you have to keep in mind. Number one, make sure you have consistent lighting and there's no shadow or disturbance. And for top-notch results, don't forget to use a tripod to keep the camera steady. Number two, pick a background that's not too busy or distracting. Number three, while recording, stick to a specific frame and make sure you don't move out of it. Once you're done with the shoot, let's move on to step two, which is to take a snapshot from the video. To do this, you can use any editing tool like Premiere Pro or Filmora. But as we're keeping it completely free, I'm going to use an online tool called vidmix.app. This editing tool is incredibly user-friendly and makes the whole editing process easier. So let's go to vidmix.app. Now you need to upload the recorded video here. Just click open and select your video file. There you go, it's in. Now choose a specific frame and click export. Here select PNG. Then click OK. And the snapshot will be downloaded. Once you get the snapshot, let's change the background. So let's move to step three, which is to change the background using AI. In this step, we're going to edit the snapshot and make a creative background for our video. To do that, I'm going to use Adobe Firefly. Adobe Firefly is an exciting new addition to Adobe's family of creative tools, which allows you to quickly perform edits like removing or replacing backgrounds with just a few clicks. So just go to firefly.adobe.com Head over to generative film. And click sign in. Now here you need to upload the snapshot of your video. So just drag and drop the snapshot here. Now you can remove any element that you don't want in the image. For instance, let's say you want to get rid of this lamp. Select remove here. And erase the object like this. And click remove. See, it has been completely removed from the image. Now say you want to add a new element to this area. Just click on insert. And here it'll ask you to save the edit you just did. So let's click save. Now go to the place where you want to add the element and select it. Then here you can describe what you want to add in this area. Imagine you're thinking of including a wall decor, so type it and hit generate. Now you'll be presented with a range of options to choose from. You can also click here to view more options. Now simply select the one that suits your background and click keep. As you can see, it seamlessly becomes a part of this image. In the same way, you can add any element you want to your background. Now let's add a bookshelf over here. But first, let's select the screen. And then search for bookshelf. Now select the one you like. And click keep. And it'll be perfectly added. And in the same way, you can find any element you want. Okay, once you're satisfied with the new background, click download. Then click continue. And your image will be downloaded. Let's open it. And as you can see, the image has a watermark on it. But do not worry, I'll show you a way to remove it. So let's go to the next step, which is to add a new background to the video. Now let's go back to vidmix, our video editor. And here you can see that we have our original video. And just add a new image, which we just created in firefly here. So let's click open file. Select the image from here, click open. And it'll be added here. Now extend the image to fit the entire length of your original video. Now if we play the video, you can see that we just have the still image. We need to make this new background appear on our video. So we need to mask only the background portion of our video. To add a new background, we need to mask it. Masking lets you change specific parts of the image, while the rest stays unchanged. To do that, select this brush option. Now go ahead and erase the part that you want to hide. Just make sure you play the video and erase the areas completely. As you can see, the watermark is also removed now. Click export. Set the bitrate. And click ok. Now give a name for the video. Click save. And that's it. Your video is now saved right on your computer. Now if we open our video. And you can see the background fits perfectly and it gives a realistic look. So that's it guys. This is how you can make creative backgrounds for your videos using AI. So go ahead and make your video stand out from the crowd. If you found this video helpful, don't forget to give it a thumbs up. And subscribe to Website Learners for more exciting tutorials. Thanks for watching. I'll see you guys in another cool video. Until then, take care. Bye-bye.\"}]"}]
+2026-04-30 12:49:52,451 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-31256a3f-cb72-4f4c-9ced-e5028816b8e8', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "You know that feeling when you see a video and the background is just mind-blowing? Well, guess what? You\'re about to discover how to create those jaw-dropping backgrounds yourself without spending any money or having to use a green screen. Sounds intriguing, right? Also, this is just a regular living room, yet with the magic of AI, I can transform this into something extraordinary in mere seconds. Want a mural background? Or a statue of liberty? Maybe even turn this place into a cozy cafe? With AI, the options are endless. And here\'s the thing, everything within this frame is real and the rest is all AI\'s work of art. So buckle up, as I\'m going to show you the best way to accomplish this. I\'m Bryan from Upstake Learners, and let\'s get started. First up, we need to shoot the video. Before we begin, there are a couple of key things that you have to keep in mind. Number one, make sure you have consistent lighting and there\'s no shadow or disturbance. And for top-notch results, don\'t forget to use a tripod to keep the camera steady. Number two, pick a background that\'s not too busy or distracting. Number three, while recording, stick to a specific frame and make sure you don\'t move out of it. Once you\'re done with the shoot, let\'s move on to step two, which is to take a snapshot from the video. To do this, you can use any editing tool like Premiere Pro or Filmora. But as we\'re keeping it completely free, I\'m going to use an online tool called vidmix.app. This editing tool is incredibly user-friendly and makes the whole editing process easier. So let\'s go to vidmix.app. Now you need to upload the recorded video here. Just click open and select your video file. There you go, it\'s in. Now choose a specific frame and click export. Here select PNG. Then click OK. And the snapshot will be downloaded. Once you get the snapshot, let\'s change the background. So let\'s move to step three, which is to change the background using AI. In this step, we\'re going to edit the snapshot and make a creative background for our video. To do that, I\'m going to use Adobe Firefly. Adobe Firefly is an exciting new addition to Adobe\'s family of creative tools, which allows you to quickly perform edits like removing or replacing backgrounds with just a few clicks. So just go to firefly.adobe.com Head over to generative film. And click sign in. Now here you need to upload the snapshot of your video. So just drag and drop the snapshot here. Now you can remove any element that you don\'t want in the image. For instance, let\'s say you want to get rid of this lamp. Select remove here. And erase the object like this. And click remove. See, it has been completely removed from the image. Now say you want to add a new element to this area. Just click on insert. And here it\'ll ask you to save the edit you just did. So let\'s click save. Now go to the place where you want to add the element and select it. Then here you can describe what you want to add in this area. Imagine you\'re thinking of including a wall decor, so type it and hit generate. Now you\'ll be presented with a range of options to choose from. You can also click here to view more options. Now simply select the one that suits your background and click keep. As you can see, it seamlessly becomes a part of this image. In the same way, you can add any element you want to your background. Now let\'s add a bookshelf over here. But first, let\'s select the screen. And then search for bookshelf. Now select the one you like. And click keep. And it\'ll be perfectly added. And in the same way, you can find any element you want. Okay, once you\'re satisfied with the new background, click download. Then click continue. And your image will be downloaded. Let\'s open it. And as you can see, the image has a watermark on it. But do not worry, I\'ll show you a way to remove it. So let\'s go to the next step, which is to add a new background to the video. Now let\'s go back to vidmix, our video editor. And here you can see that we have our original video. And just add a new image, which we just created in firefly here. So let\'s click open file. Select the image from here, click open. And it\'ll be added here. Now extend the image to fit the entire length of your original video. Now if we play the video, you can see that we just have the still image. We need to make this new background appear on our video. So we need to mask only the background portion of our video. To add a new background, we need to mask it. Masking lets you change specific parts of the image, while the rest stays unchanged. To do that, select this brush option. Now go ahead and erase the part that you want to hide. Just make sure you play the video and erase the areas completely. As you can see, the watermark is also removed now. Click export. Set the bitrate. And click ok. Now give a name for the video. Click save. And that\'s it. Your video is now saved right on your computer. Now if we open our video. And you can see the background fits perfectly and it gives a realistic look. So that\'s it guys. This is how you can make creative backgrounds for your videos using AI. So go ahead and make your video stand out from the crowd. If you found this video helpful, don\'t forget to give it a thumbs up. And subscribe to Website Learners for more exciting tutorials. Thanks for watching. I\'ll see you guys in another cool video. Until then, take care. Bye-bye."}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:49:52,500 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:49:52,501 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:49:52,638 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000020BA9008830>
+2026-04-30 12:49:52,638 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x0000020BA7ABAE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:49:52,718 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000020BA8F8C690>
+2026-04-30 12:49:52,719 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:49:52,720 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:49:52,720 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:49:52,720 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:49:52,720 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:49:53,480 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:50:08 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777531807-oL4tEMukJEphzVJVjTqn'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f449c45dee5fceb-SIN')])
+2026-04-30 12:49:53,481 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:49:53,482 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:50:00,796 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:50:00,796 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:50:00,796 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:50:00,798 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:50:08 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777531807-oL4tEMukJEphzVJVjTqn', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f449c45dee5fceb-SIN'})
+2026-04-30 12:50:00,798 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:50:00,809 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "আপনি জানেন যে, যখন আপনি একটি ভিডিও দেখেন এবং ব্যাকগ্রাউন্ডটি মন মুগ্ধকর হয়? আচ্ছা, কি অনুমান করছেন? আপনি সেই অসাধারণ ব্যাকগ্রাউন্ডগুলি কীভাবে তৈরি করবেন তা আবিষ্কার করতে চলেছেন, কোনো টাকা খরচ না করে বা গ্রিন স্ক্রিন ব্যবহার না করে। শুনতে আকর্ষণীয় লাগছে, তাই না? এছাড়াও, এটি কেবল একটি সাধারণ বসার ঘর, তবুও AI-এর জাদুতে, আমি এটিকে কয়েক সেকেন্ডের মধ্যে অসাধারণ কিছুতে রূপান্তরিত করতে পারি। একটি ম্যুরাল ব্যাকগ্রাউন্ড চান? নাকি স্ট্যাচু অফ লিবার্টি? এমনকি এই জায়গাটিকে একটি আরামদায়ক ক্যাফেতে পরিণত করতে চান? AI-এর সাথে, বিকল্পগুলি অফুরন্ত। এবং এখানে বিষয়টি হলো, এই ফ্রেমের মধ্যে সবকিছুই বাস্তব এবং বাকিটা সবই AI-এর শিল্পকর্ম। তাই প্রস্তুত হন, কারণ আমি আপনাকে এটি সম্পন্ন করার সেরা উপায় দেখাতে যাচ্ছি। আমি আপস্টেক লার্নার্স থেকে ব্রায়ান, এবং চলুন শুরু করা যাক। প্রথমে, আমাদের ভিডিওটি শুট করতে হবে। শুরু করার আগে, কয়েকটি গুরুত্বপূর্ণ বিষয় আছে যা আপনাকে মনে রাখতে হবে। প্রথমত, নিশ্চিত করুন যে আপনার আলো সামঞ্জস্যপূর্ণ এবং কোনো ছায়া বা ব্যাঘাত নেই। এবং সেরা ফলাফলের জন্য, ক্যামেরা স্থির রাখতে একটি ট্রাইপড ব্যবহার করতে ভুলবেন না। দ্বিতীয়ত, এমন একটি ব্যাকগ্রাউন্ড বেছে নিন যা খুব বেশি ব্যস্ত বা বিভ্রান্তিকর নয়। তৃতীয়ত, রেকর্ডিং করার সময়, একটি নির্দিষ্ট ফ্রেমে থাকুন এবং নিশ্চিত করুন যে আপনি এর বাইরে যাবেন না। একবার আপনার শুট শেষ হলে, চলুন দ্বিতীয় ধাপে যাওয়া যাক, যা ভিডিও থেকে একটি স্ন্যাপশট নেওয়া। এটি করার জন্য, আপনি প্রিমিয়ার প্রো বা ফিল্মোরার মতো যেকোনো এডিটিং টুল ব্যবহার করতে পারেন। কিন্তু যেহেতু আমরা এটি সম্পূর্ণ বিনামূল্যে রাখছি, আমি vidmix.app নামক একটি অনলাইন টুল ব্যবহার করতে যাচ্ছি। এই এডিটিং টুলটি অবিশ্বাস্যভাবে ব্যবহারকারী-বান্ধব এবং পুরো এডিটিং প্রক্রিয়াটিকে সহজ করে তোলে। তাই চলুন vidmix.app-এ যাই। এখন আপনাকে এখানে রেকর্ড করা ভিডিওটি আপলোড করতে হবে। শুধু ওপেন ক্লিক করুন এবং আপনার ভিডিও ফাইলটি নির্বাচন করুন। এই তো, এটি চলে এসেছে। এখন একটি নির্দিষ্ট ফ্রেম বেছে নিন এবং এক্সপোর্ট ক্লিক করুন। এখানে PNG নির্বাচন করুন। তারপর ওকে ক্লিক করুন। এবং স্ন্যাপশটটি ডাউনলোড হয়ে যাবে। একবার আপনি স্ন্যাপশটটি পেয়ে গেলে, চলুন ব্যাকগ্রাউন্ড পরিবর্তন করি। তাই চলুন তৃতীয় ধাপে যাওয়া যাক, যা AI ব্যবহার করে ব্যাকগ্রাউন্ড পরিবর্তন করা। এই ধাপে, আমরা স্ন্যাপশটটি এডিট করব এবং আমাদের ভিডিওর জন্য একটি সৃজনশীল ব্যাকগ্রাউন্ড তৈরি করব। এটি করার জন্য, আমি Adobe Firefly ব্যবহার করতে যাচ্ছি। Adobe Firefly হল Adobe-এর ক্রিয়েটিভ টুলগুলির পরিবারে একটি উত্তেজনাপূর্ণ নতুন সংযোজন, যা আপনাকে কয়েকটি ক্লিকেই ব্যাকগ্রাউন্ড সরানো বা প্রতিস্থাপনের মতো দ্রুত এডিট করতে দেয়। তাই শুধু firefly.adobe.com-এ যান। জেনারেটিভ ফিল্মে যান। এবং সাইন ইন ক্লিক করুন। এখন এখানে আপনাকে আপনার ভিডিওর স্ন্যাপশটটি আপলোড করতে হবে। তাই শুধু স্ন্যাপশটটি এখানে টেনে আনুন এবং ছেড়ে দিন। এখন আপনি ছবি থেকে যেকোনো উপাদান যা আপনি চান না তা সরাতে পারেন। উদাহরণস্বরূপ, ধরুন আপনি এই ল্যাম্পটি সরাতে চান। এখানে রিমুভ নির্বাচন করুন। এবং বস্তুটি এভাবে মুছে ফেলুন। এবং রিমুভ ক্লিক করুন। দেখুন, এটি ছবি থেকে সম্পূর্ণভাবে সরানো হয়েছে। এখন ধরুন আপনি এই এলাকায় একটি নতুন উপাদান যোগ করতে চান। শুধু ইনসার্ট ক্লিক করুন। এবং এখানে এটি আপনাকে আপনার করা এডিটটি সংরক্ষণ করতে বলবে। তাই চলুন সেভ ক্লিক করি। এখন যেখানে আপনি উপাদানটি যোগ করতে চান সেখানে যান এবং এটি নির্বাচন করুন। তারপর এখানে আপনি বর্ণনা করতে পারেন যে আপনি এই এলাকায় কী যোগ করতে চান। কল্পনা করুন আপনি একটি ওয়াল ডেকোর অন্তর্ভুক্ত করার কথা ভাবছেন, তাই এটি টাইপ করুন এবং জেনারেট চাপুন। এখন আপনাকে বেছে নেওয়ার জন্য বিভিন্ন বিকল্প উপস্থাপন করা হবে। আপনি আরও বিকল্প দেখতে এখানে ক্লিক করতে পারেন। এখন কেবল আপনার ব্যাকগ্রাউন্ডের সাথে মানানসই একটি নির্বাচন করুন এবং কিপ ক্লিক করুন। যেমনটি আপনি দেখতে পাচ্ছেন, এটি নির্বিঘ্নে এই ছবির একটি অংশ হয়ে গেছে। একইভাবে, আপনি আপনার ব্যাকগ্রাউন্ডে যেকোনো উপাদান যোগ করতে পারেন। এখন চলুন এখানে একটি বুকশেল্ফ যোগ করি। কিন্তু প্রথমে, চলুন স্ক্রিনটি নির্বাচন করি। এবং তারপর বুকশেল্ফ অনুসন্ধান করি। এখন আপনার পছন্দের একটি নির্বাচন করুন। এবং কিপ ক্লিক করুন। এবং এটি পুরোপুরি যোগ করা হবে। এবং একইভাবে, আপনি আপনার পছন্দের যেকোনো উপাদান খুঁজে পেতে পারেন। ঠিক আছে, একবার আপনি নতুন ব্যাকগ্রাউন্ডে সন্তুষ্ট হলে, ডাউনলোড ক্লিক করুন। তারপর কন্টিনিউ ক্লিক করুন। এবং আপনার ছবিটি ডাউনলোড হয়ে যাবে। চলুন এটি খুলি। এবং যেমনটি আপনি দেখতে পাচ্ছেন, ছবিতে একটি ওয়াটারমার্ক আছে। কিন্তু চিন্তা করবেন না, আমি আপনাকে এটি সরানোর একটি উপায় দেখাব। তাই চলুন পরবর্তী ধাপে যাওয়া যাক, যা ভিডিওতে একটি নতুন ব্যাকগ্রাউন্ড যোগ করা। এখন চলুন আমাদের ভিডিও এডিটর vidmix-এ ফিরে যাই। এবং এখানে আপনি দেখতে পাচ্ছেন যে আমাদের আসল ভিডিওটি আছে। এবং শুধু একটি নতুন ছবি যোগ করুন, যা আমরা ফায়ারফ্লাইতে এখানে তৈরি করেছি। তাই চলুন ওপেন ফাইল ক্লিক করি। এখান থেকে ছবিটি নির্বাচন করুন, ওপেন ক্লিক করুন। এবং এটি এখানে যোগ করা হবে। এখন ছবিটি আপনার আসল ভিডিওর পুরো দৈর্ঘ্য জুড়ে প্রসারিত করুন। এখন যদি আমরা ভিডিওটি চালাই, আপনি দেখতে পাচ্ছেন যে আমাদের কেবল স্থির ছবিটি আছে। আমাদের এই নতুন ব্যাকগ্রাউন্ডটি আমাদের ভিডিওতে দেখাতে হবে। তাই আমাদের কেবল আমাদের ভিডিওর ব্যাকগ্রাউন্ড অংশটি মাস্ক করতে হবে। একটি নতুন ব্যাকগ্রাউন্ড যোগ করতে, আমাদের এটি মাস্ক করতে হবে। মাস্কিং আপনাকে ছবির নির্দিষ্ট অংশ পরিবর্তন করতে দেয়, যখন বাকিটা অপরিবর্তিত থাকে। এটি করার জন্য, এই ব্রাশ অপশনটি নির্বাচন করুন। এখন এগিয়ে যান এবং যে অংশটি আপনি লুকাতে চান তা মুছে ফেলুন। শুধু নিশ্চিত করুন যে আপনি ভিডিওটি চালান এবং এলাকাগুলি সম্পূর্ণরূপে মুছে ফেলুন। যেমনটি আপনি দেখতে পাচ্ছেন, ওয়াটারমার্কটিও এখন সরানো হয়েছে। এক্সপোর্ট ক্লিক করুন। বিটরেট সেট করুন। এবং ওকে ক্লিক করুন। এখন ভিডিওটির জন্য একটি নাম দিন। সেভ ক্লিক করুন। এবং এই তো। আপনার ভিডিওটি এখন আপনার কম্পিউটারে সংরক্ষিত হয়েছে। এখন যদি আমরা আমাদের ভিডিওটি খুলি। এবং আপনি দেখতে পাচ্ছেন যে ব্যাকগ্রাউন্ডটি পুরোপুরি ফিট হয়েছে এবং এটি একটি বাস্তবসম্মত চেহারা দেয়। তো এই তো বন্ধুরা। এভাবেই আপনি AI ব্যবহার করে আপনার ভিডিওর জন্য সৃজনশীল ব্যাকগ্রাউন্ড তৈরি করতে পারেন। তাই এগিয়ে যান এবং আপনার ভিডিওকে ভিড়ের মধ্যে আলাদা করে তুলুন। যদি আপনি এই ভিডিওটি সহায়ক মনে করেন, তাহলে এটিকে একটি থাম্বস আপ দিতে ভুলবেন না। এবং আরও উত্তেজনাপূর্ণ টিউটোরিয়ালের জন্য ওয়েবসাইট লার্নার্স সাবস্ক্রাইব করুন। দেখার জন্য ধন্যবাদ। আমি আপনাদের সাথে অন্য একটি দুর্দান্ত ভিডিওতে দেখা করব। ততক্ষণ পর্যন্ত, ভালো থাকুন। বাই বাই।।"}]
+2026-04-30 12:50:00,811 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:50:00,811 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:50:00,811 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:50:00,811 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:50:00,811 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:50:00,811 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:50:00,812 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'আপনি জানেন যে, যখন আপনি একটি ভিডিও দেখেন এবং ব্যাকগ্রাউন্ডটি মন মুগ্ধকর হয়? আচ্ছা, কি অনুমান করছেন? আপনি সেই অসাধারণ ব্যাকগ্রাউন্ডগুলি কীভাবে তৈরি করবেন তা আবিষ্কার করতে চলেছেন, কোনো টাকা খরচ না করে বা গ্রিন স্ক্রিন ব্যবহার না করে। শুনতে আকর্ষণীয় লাগছে, তাই না? এছাড়াও, এটি কেবল একটি সাধারণ বসার ঘর, তবুও AI-এর জাদুতে, আমি এটিকে কয়েক সেকেন্ডের মধ্যে অসাধারণ কিছুতে রূপান্তরিত করতে পারি। একটি ম্যুরাল ব্যাকগ্রাউন্ড চান? নাকি স্ট্যাচু অফ লিবার্টি? এমনকি এই জায়গাটিকে একটি আরামদায়ক ক্যাফেতে পরিণত করতে চান? AI-এর সাথে, বিকল্পগুলি অফুরন্ত। এবং এখানে বিষয়টি হলো, এই ফ্রেমের মধ্যে সবকিছুই বাস্তব এবং বাকিটা সবই AI-এর শিল্পকর্ম। তাই প্রস্তুত হন, কারণ আমি আপনাকে এটি সম্পন্ন করার সেরা উপায় দেখাতে যাচ্ছি। আমি আপস্টেক লার্নার্স থেকে ব্রায়ান, এবং চলুন শুরু করা যাক। প্রথমে, আমাদের ভিডিওটি শুট করতে হবে। শুরু করার আগে, কয়েকটি গুরুত্বপূর্ণ বিষয় আছে যা আপনাকে মনে রাখতে হবে। প্রথমত, নিশ্চিত করুন যে আপনার আলো সামঞ্জস্যপূর্ণ এবং কোনো ছায়া বা ব্যাঘাত নেই। এবং সেরা ফলাফলের জন্য, ক্যামেরা স্থির রাখতে একটি ট্রাইপড ব্যবহার করতে ভুলবেন না। দ্বিতীয়ত, এমন একটি ব্যাকগ্রাউন্ড বেছে নিন যা খুব বেশি ব্যস্ত বা বিভ্রান্তিকর নয়। তৃতীয়ত, রেকর্ডিং করার সময়, একটি নির্দিষ্ট ফ্রেমে থাকুন এবং নিশ্চিত করুন যে আপনি এর বাইরে যাবেন না। একবার আপনার শুট শেষ হলে, চলুন দ্বিতীয় ধাপে যাওয়া যাক, যা ভিডিও থেকে একটি স্ন্যাপশট নেওয়া। এটি করার জন্য, আপনি প্রিমিয়ার প্রো বা ফিল্মোরার মতো যেকোনো এডিটিং টুল ব্যবহার করতে পারেন। কিন্তু যেহেতু আমরা এটি সম্পূর্ণ বিনামূল্যে রাখছি, আমি vidmix.app নামক একটি অনলাইন টুল ব্যবহার করতে যাচ্ছি। এই এডিটিং টুলটি অবিশ্বাস্যভাবে ব্যবহারকারী-বান্ধব এবং পুরো এডিটিং প্রক্রিয়াটিকে সহজ করে তোলে। তাই চলুন vidmix.app-এ যাই। এখন আপনাকে এখানে রেকর্ড করা ভিডিওটি আপলোড করতে হবে। শুধু ওপেন ক্লিক করুন এবং আপনার ভিডিও ফাইলটি নির্বাচন করুন। এই তো, এটি চলে এসেছে। এখন একটি নির্দিষ্ট ফ্রেম বেছে নিন এবং এক্সপোর্ট ক্লিক করুন। এখানে PNG নির্বাচন করুন। তারপর ওকে ক্লিক করুন। এবং স্ন্যাপশটটি ডাউনলোড হয়ে যাবে। একবার আপনি স্ন্যাপশটটি পেয়ে গেলে, চলুন ব্যাকগ্রাউন্ড পরিবর্তন করি। তাই চলুন তৃতীয় ধাপে যাওয়া যাক, যা AI ব্যবহার করে ব্যাকগ্রাউন্ড পরিবর্তন করা। এই ধাপে, আমরা স্ন্যাপশটটি এডিট করব এবং আমাদের ভিডিওর জন্য একটি সৃজনশীল ব্যাকগ্রাউন্ড তৈরি করব। এটি করার জন্য, আমি Adobe Firefly ব্যবহার করতে যাচ্ছি। Adobe Firefly হল Adobe-এর ক্রিয়েটিভ টুলগুলির পরিবারে একটি উত্তেজনাপূর্ণ নতুন সংযোজন, যা আপনাকে কয়েকটি ক্লিকেই ব্যাকগ্রাউন্ড সরানো বা প্রতিস্থাপনের মতো দ্রুত এডিট করতে দেয়। তাই শুধু firefly.adobe.com-এ যান। জেনারেটিভ ফিল্মে যান। এবং সাইন ইন ক্লিক করুন। এখন এখানে আপনাকে আপনার ভিডিওর স্ন্যাপশটটি আপলোড করতে হবে। তাই শুধু স্ন্যাপশটটি এখানে টেনে আনুন এবং ছেড়ে দিন। এখন আপনি ছবি থেকে যেকোনো উপাদান যা আপনি চান না তা সরাতে পারেন। উদাহরণস্বরূপ, ধরুন আপনি এই ল্যাম্পটি সরাতে চান। এখানে রিমুভ নির্বাচন করুন। এবং বস্তুটি এভাবে মুছে ফেলুন। এবং রিমুভ ক্লিক করুন। দেখুন, এটি ছবি থেকে সম্পূর্ণভাবে সরানো হয়েছে। এখন ধরুন আপনি এই এলাকায় একটি নতুন উপাদান যোগ করতে চান। শুধু ইনসার্ট ক্লিক করুন। এবং এখানে এটি আপনাকে আপনার করা এডিটটি সংরক্ষণ করতে বলবে। তাই চলুন সেভ ক্লিক করি। এখন যেখানে আপনি উপাদানটি যোগ করতে চান সেখানে যান এবং এটি নির্বাচন করুন। তারপর এখানে আপনি বর্ণনা করতে পারেন যে আপনি এই এলাকায় কী যোগ করতে চান। কল্পনা করুন আপনি একটি ওয়াল ডেকোর অন্তর্ভুক্ত করার কথা ভাবছেন, তাই এটি টাইপ করুন এবং জেনারেট চাপুন। এখন আপনাকে বেছে নেওয়ার জন্য বিভিন্ন বিকল্প উপস্থাপন করা হবে। আপনি আরও বিকল্প দেখতে এখানে ক্লিক করতে পারেন। এখন কেবল আপনার ব্যাকগ্রাউন্ডের সাথে মানানসই একটি নির্বাচন করুন এবং কিপ ক্লিক করুন। যেমনটি আপনি দেখতে পাচ্ছেন, এটি নির্বিঘ্নে এই ছবির একটি অংশ হয়ে গেছে। একইভাবে, আপনি আপনার ব্যাকগ্রাউন্ডে যেকোনো উপাদান যোগ করতে পারেন। এখন চলুন এখানে একটি বুকশেল্ফ যোগ করি। কিন্তু প্রথমে, চলুন স্ক্রিনটি নির্বাচন করি। এবং তারপর বুকশেল্ফ অনুসন্ধান করি। এখন আপনার পছন্দের একটি নির্বাচন করুন। এবং কিপ ক্লিক করুন। এবং এটি পুরোপুরি যোগ করা হবে। এবং একইভাবে, আপনি আপনার পছন্দের যেকোনো উপাদান খুঁজে পেতে পারেন। ঠিক আছে, একবার আপনি নতুন ব্যাকগ্রাউন্ডে সন্তুষ্ট হলে, ডাউনলোড ক্লিক করুন। তারপর কন্টিনিউ ক্লিক করুন। এবং আপনার ছবিটি ডাউনলোড হয়ে যাবে। চলুন এটি খুলি। এবং যেমনটি আপনি দেখতে পাচ্ছেন, ছবিতে একটি ওয়াটারমার্ক আছে। কিন্তু চিন্তা করবেন না, আমি আপনাকে এটি সরানোর একটি উপায় দেখাব। তাই চলুন পরবর্তী ধাপে যাওয়া যাক, যা ভিডিওতে একটি নতুন ব্যাকগ্রাউন্ড যোগ করা। এখন চলুন আমাদের ভিডিও এডিটর vidmix-এ ফিরে যাই। এবং এখানে আপনি দেখতে পাচ্ছেন যে আমাদের আসল ভিডিওটি আছে। এবং শুধু একটি নতুন ছবি যোগ করুন, যা আমরা ফায়ারফ্লাইতে এখানে তৈরি করেছি। তাই চলুন ওপেন ফাইল ক্লিক করি। এখান থেকে ছবিটি নির্বাচন করুন, ওপেন ক্লিক করুন। এবং এটি এখানে যোগ করা হবে। এখন ছবিটি আপনার আসল ভিডিওর পুরো দৈর্ঘ্য জুড়ে প্রসারিত করুন। এখন যদি আমরা ভিডিওটি চালাই, আপনি দেখতে পাচ্ছেন যে আমাদের কেবল স্থির ছবিটি আছে। আমাদের এই নতুন ব্যাকগ্রাউন্ডটি আমাদের ভিডিওতে দেখাতে হবে। তাই আমাদের কেবল আমাদের ভিডিওর ব্যাকগ্রাউন্ড অংশটি মাস্ক করতে হবে। একটি নতুন ব্যাকগ্রাউন্ড যোগ করতে, আমাদের এটি মাস্ক করতে হবে। মাস্কিং আপনাকে ছবির নির্দিষ্ট অংশ পরিবর্তন করতে দেয়, যখন বাকিটা অপরিবর্তিত থাকে। এটি করার জন্য, এই ব্রাশ অপশনটি নির্বাচন করুন। এখন এগিয়ে যান এবং যে অংশটি আপনি লুকাতে চান তা মুছে ফেলুন। শুধু নিশ্চিত করুন যে আপনি ভিডিওটি চালান এবং এলাকাগুলি সম্পূর্ণরূপে মুছে ফেলুন। যেমনটি আপনি দেখতে পাচ্ছেন, ওয়াটারমার্কটিও এখন সরানো হয়েছে। এক্সপোর্ট ক্লিক করুন। বিটরেট সেট করুন। এবং ওকে ক্লিক করুন। এখন ভিডিওটির জন্য একটি নাম দিন। সেভ ক্লিক করুন। এবং এই তো। আপনার ভিডিওটি এখন আপনার কম্পিউটারে সংরক্ষিত হয়েছে। এখন যদি আমরা আমাদের ভিডিওটি খুলি। এবং আপনি দেখতে পাচ্ছেন যে ব্যাকগ্রাউন্ডটি পুরোপুরি ফিট হয়েছে এবং এটি একটি বাস্তবসম্মত চেহারা দেয়। তো এই তো বন্ধুরা। এভাবেই আপনি AI ব্যবহার করে আপনার ভিডিওর জন্য সৃজনশীল ব্যাকগ্রাউন্ড তৈরি করতে পারেন। তাই এগিয়ে যান এবং আপনার ভিডিওকে ভিড়ের মধ্যে আলাদা করে তুলুন। যদি আপনি এই ভিডিওটি সহায়ক মনে করেন, তাহলে এটিকে একটি থাম্বস আপ দিতে ভুলবেন না। এবং আরও উত্তেজনাপূর্ণ টিউটোরিয়ালের জন্য ওয়েবসাইট লার্নার্স সাবস্ক্রাইব করুন। দেখার জন্য ধন্যবাদ। আমি আপনাদের সাথে অন্য একটি দুর্দান্ত ভিডিওতে দেখা করব। ততক্ষণ পর্যন্ত, ভালো থাকুন। বাই বাই।।', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:50:00,815 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:50:01,955 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:51:16,442 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:51:16,447 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:51:16,448 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:51:16,448 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:51:16,670 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:51:17,043 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:51:17,044 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531746600\dubbed_full.wav
+2026-04-30 12:51:17,044 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:51:17,044 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:51:17,044 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531746600\job_1777531746600_dubbed_bn.mp4
+2026-04-30 12:51:22,781 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777531746600\job_1777531746600_dubbed_bn.mp4 (14.0 MB)
+2026-04-30 12:51:22,782 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:51:22,796 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:51:22,796 [INFO] [pipeline] === Pipeline DONE: job_1777531746600 → M:\download-ch\job_1777531746600_dubbed_bn.mp4 ===
+2026-04-30 12:51:22,879 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:51:22,880 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 13:03:48,274 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 13:03:48,275 [INFO] [pipeline] === Pipeline START: job_1777532625242 ===
+2026-04-30 13:03:48,276 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777532625242
+2026-04-30 13:03:48,277 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 13:03:48,332 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777532625242\input.mp4
+2026-04-30 13:03:48,332 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 13:03:48,332 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777532625242\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 13:03:48,701 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777532625242\audio.wav (5.6 MB)
+2026-04-30 13:03:48,701 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 13:03:48,701 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 13:03:48,701 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=zh
+2026-04-30 13:03:48,701 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 13:03:48,733 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 13:03:48,733 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "zh"}
+2026-04-30 13:03:48,763 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 13:04:09,477 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 13:04:09,480 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 13:04:09,480 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"我妈刚给我缝好的 你们别抢了 别跟他废话 学校查证了 你们 你们 给的也不够 姐妹你少吃点 这非好 我这还有一件 姐妹快帮忙 最夸张的老秦来了 哥哥我真剩这一件了 快点给我交换衣服 然后呢哥哥 为啥交换衣服呀 来人啊有刺客 他是哥哥 宰了他 以后可不接这鸡蛋了 来 学校给咱们颁发了 象征着荣誉的流动红色 班长来包管一下 全世界只有一颗 等班会展示 只有一颗吗 我要看镜头 绿萝 给我看一眼呗 不给看 哎呀我给你钱 给钱也不行 这么说绿萝 不喜欢有钱人 绿萝看我 我破产了 现在是个穷人 差一天你自己玩去 我今天没空给你炒CP 少爷 没钱不要紧 我可以擦片羊腩 你就答应他吧 实在不行 我也要你们俩 碎了 绿萝 你就把红钻给我看一眼 你要看红钻干嘛呀 我就是看一眼 不行我不能给你看 我就要看 我就是不小心把 我把他弄碎了 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 我们一起承担 好啊 你们俩玩红钻不带我 哥哥你别 没人 本宫不能看 哥哥我俩就是不小心 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 我们一起承担 绿萝 我想照着流动红钻 给你买一个 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 把红钻也给我们几个看看呗 所有江湖偶遇 都是宿命相逢 来等会儿 待会儿红钻拿出来 这个流动红钻 由本校长亲自颁发 此刻各班老师 和记者朋友们都在 这本该是我们颁的 不公平 把这张红钻带上来吧 孩子别紧张 我就不信 他们颁纪律这么好 都啥时候了 你别玩你那你傻的 反正我就死定了 我手机那个人 你给我抓起来 我没我 我 我想问问各位 一个公然玩手机的班 才拿流动红钻 那你想怎么样 只要还没颁奖 这红钻就不算他们颁的 算我们颁的 他们颁就算把这份扣了 也比你班分高了 侯立罗 你怎么也上课玩手机啊 老师这手机不是我的 你是想给咱班扣分 把红钻送给其他班吗 那老师对不起 给他扣分 哎呦我手机掉了 扣分 哪来的兵器啊 扣分 我玩电脑 我吃火锅 我开直播 拉不拉通 你们班疯了吗 现在它是我的了 不是啊 它们班还是比你高0.5分 我 我要早恋","usage":{"seconds":185,"cost":0.018500000000000003}}...
+2026-04-30 13:04:09,483 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 13:04:09,486 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 13:04:09,486 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 13:04:09,486 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 13:04:09,794 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 13:04:09,795 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 13:04:09,795 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in zh. Translate each segment into en.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"我妈刚给我缝好的 你们别抢了 别跟他废话 学校查证了 你们 你们 给的也不够 姐妹你少吃点 这非好 我这还有一件 姐妹快帮忙 最夸张的老秦来了 哥哥我真剩这一件了 快点给我交换衣服 然后呢哥哥 为啥交换衣服呀 来人啊有刺客 他是哥哥 宰了他 以后可不接这鸡蛋了 来 学校给咱们颁发了 象征着荣誉的流动红色 班长来包管一下 全世界只有一颗 等班会展示 只有一颗吗 我要看镜头 绿萝 给我看一眼呗 不给看 哎呀我给你钱 给钱也不行 这么说绿萝 不喜欢有钱人 绿萝看我 我破产了 现在是个穷人 差一天你自己玩去 我今天没空给你炒CP 少爷 没钱不要紧 我可以擦片羊腩 你就答应他吧 实在不行 我也要你们俩 碎了 绿萝 你就把红钻给我看一眼 你要看红钻干嘛呀 我就是看一眼 不行我不能给你看 我就要看 我就是不小心把 我把他弄碎了 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 我们一起承担 好啊 你们俩玩红钻不带我 哥哥你别 没人 本宫不能看 哥哥我俩就是不小心 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 我们一起承担 绿萝 我想照着流动红钻 给你买一个 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 把红钻也给我们几个看看呗 所有江湖偶遇 都是宿命相逢 来等会儿 待会儿红钻拿出来 这个流动红钻 由本校长亲自颁发 此刻各班老师 和记者朋友们都在 这本该是我们颁的 不公平 把这张红钻带上来吧 孩子别紧张 我就不信 他们颁纪律这么好 都啥时候了 你别玩你那你傻的 反正我就死定了 我手机那个人 你给我抓起来 我没我 我 我想问问各位 一个公然玩手机的班 才拿流动红钻 那你想怎么样 只要还没颁奖 这红钻就不算他们颁的 算我们颁的 他们颁就算把这份扣了 也比你班分高了 侯立罗 你怎么也上课玩手机啊 老师这手机不是我的 你是想给咱班扣分 把红钻送给其他班吗 那老师对不起 给他扣分 哎呦我手机掉了 扣分 哪来的兵器啊 扣分 我玩电脑 我吃火锅 我开直播 拉不拉通 你们班疯了吗 现在它是我的了 不是啊 它们班还是比你高0.5分 我 我要早恋\"}]"}]
+2026-04-30 13:04:10,339 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-707f2334-33e1-49db-a465-996e683f94f3', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in zh. Translate each segment into en.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "我妈刚给我缝好的 你们别抢了 别跟他废话 学校查证了 你们 你们 给的也不够 姐妹你少吃点 这非好 我这还有一件 姐妹快帮忙 最夸张的老秦来了 哥哥我真剩这一件了 快点给我交换衣服 然后呢哥哥 为啥交换衣服呀 来人啊有刺客 他是哥哥 宰了他 以后可不接这鸡蛋了 来 学校给咱们颁发了 象征着荣誉的流动红色 班长来包管一下 全世界只有一颗 等班会展示 只有一颗吗 我要看镜头 绿萝 给我看一眼呗 不给看 哎呀我给你钱 给钱也不行 这么说绿萝 不喜欢有钱人 绿萝看我 我破产了 现在是个穷人 差一天你自己玩去 我今天没空给你炒CP 少爷 没钱不要紧 我可以擦片羊腩 你就答应他吧 实在不行 我也要你们俩 碎了 绿萝 你就把红钻给我看一眼 你要看红钻干嘛呀 我就是看一眼 不行我不能给你看 我就要看 我就是不小心把 我把他弄碎了 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 我们一起承担 好啊 你们俩玩红钻不带我 哥哥你别 没人 本宫不能看 哥哥我俩就是不小心 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 我们一起承担 绿萝 我想照着流动红钻 给你买一个 我把他弄碎了 别怕 所有江湖偶遇 都是宿命相逢 把红钻也给我们几个看看呗 所有江湖偶遇 都是宿命相逢 来等会儿 待会儿红钻拿出来 这个流动红钻 由本校长亲自颁发 此刻各班老师 和记者朋友们都在 这本该是我们颁的 不公平 把这张红钻带上来吧 孩子别紧张 我就不信 他们颁纪律这么好 都啥时候了 你别玩你那你傻的 反正我就死定了 我手机那个人 你给我抓起来 我没我 我 我想问问各位 一个公然玩手机的班 才拿流动红钻 那你想怎么样 只要还没颁奖 这红钻就不算他们颁的 算我们颁的 他们颁就算把这份扣了 也比你班分高了 侯立罗 你怎么也上课玩手机啊 老师这手机不是我的 你是想给咱班扣分 把红钻送给其他班吗 那老师对不起 给他扣分 哎呦我手机掉了 扣分 哪来的兵器啊 扣分 我玩电脑 我吃火锅 我开直播 拉不拉通 你们班疯了吗 现在它是我的了 不是啊 它们班还是比你高0.5分 我 我要早恋"}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 13:04:10,391 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 13:04:10,392 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 13:04:10,489 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x00000206F1480830>
+2026-04-30 13:04:10,489 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x00000206F0F0AE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 13:04:10,565 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x00000206F140C690>
+2026-04-30 13:04:10,566 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 13:04:10,567 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 13:04:10,567 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 13:04:10,567 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 13:04:10,568 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 13:04:11,836 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 07:04:26 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777532665-RnCGQNd7tqiUbGU9d050'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f44b13779ae8241-SIN')])
+2026-04-30 13:04:11,837 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 13:04:11,837 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 13:04:15,598 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 13:04:15,598 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 13:04:15,598 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 13:04:15,599 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 07:04:26 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777532665-RnCGQNd7tqiUbGU9d050', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f44b13779ae8241-SIN'})
+2026-04-30 13:04:15,599 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 13:04:15,609 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "My mom just sewed this for me. Don't fight over it! Don't waste time with him. The school checked, and you didn't give enough. Sister, eat less. This is good. I have another one. Sister, help! The most exaggerated Old Qin is here. Brother, I only have this one left. Hurry and exchange clothes with me. Why exchange clothes, brother? Help! An assassin! He's a brother, kill him! I won't take these eggs anymore. The school awarded us the symbolic red diamond of honor. Class monitor, take care of it. There's only one in the world. We'll show it at the class meeting. Only one? I want to see the camera. Green Vine, let me see it. No. I'll give you money. Money won't work either. So Green Vine doesn't like rich people. Green Vine, look at me. I'm broke. I'm poor now. Go play by yourself. I don't have time to ship us today. Young master, it's okay if you don't have money. I can wipe a lamb chop. Just agree to him. If not, I want you two to break up. Green Vine, just let me see the red diamond. Why do you want to see the red diamond? I just want to see it. No, I can't show you. I want to see it. I accidentally broke it. I broke it. Don't be afraid. All encounters in the world are destined. We'll bear it together. Oh, you two are playing with the red diamond without me. Brother, don't. No one. I can't see it. Brother, we just accidentally broke it. Don't be afraid. All encounters in the world are destined. We'll bear it together. Green Vine, I want to buy you one like the red diamond. I broke it. Don't be afraid. All encounters in the world are destined. Let us see the red diamond too. All encounters in the world are destined. Wait a minute. When the red diamond is brought out, this red diamond will be personally awarded by the principal. At this moment, teachers from all classes and reporter friends are here. This should have been awarded by us. It's unfair. Bring that red diamond up. Child, don't be nervous. I don't believe they can maintain such good discipline. What time is it? Don't play with your phone, you idiot. Anyway, I'm dead. That person with my phone, catch him for me. I didn't. I want to ask everyone, a class that openly plays with phones gets the red diamond? What do you want? As long as the award hasn't been given, this red diamond isn't theirs. It's ours. Even if they deduct points, they'll still have a higher score than your class. Hou Liluo, why are you playing with your phone in class too? Teacher, this phone isn't mine. Do you want to deduct points from our class and give the red diamond to other classes? Then, teacher, I'm sorry. Deduct points from him. Oh, my phone fell. Deduct points. Where did the weapon come from? Deduct points. I'm playing on the computer. I'm eating hotpot. I'm live streaming. Are you class crazy? Now it's mine. No, their class is still 0.5 points higher than yours. I want to fall in love."}
+]
+2026-04-30 13:04:15,609 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 13:04:15,609 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 13:04:15,609 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 13:04:15,609 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 13:04:15,609 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 13:04:15,609 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 13:04:15,610 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': "My mom just sewed this for me. Don't fight over it! Don't waste time with him. The school checked, and you didn't give enough. Sister, eat less. This is good. I have another one. Sister, help! The most exaggerated Old Qin is here. Brother, I only have this one left. Hurry and exchange clothes with me. Why exchange clothes, brother? Help! An assassin! He's a brother, kill him! I won't take these eggs anymore. The school awarded us the symbolic red diamond of honor. Class monitor, take care of it. There's only one in the world. We'll show it at the class meeting. Only one? I want to see the camera. Green Vine, let me see it. No. I'll give you money. Money won't work either. So Green Vine doesn't like rich people. Green Vine, look at me. I'm broke. I'm poor now. Go play by yourself. I don't have time to ship us today. Young master, it's okay if you don't have money. I can wipe a lamb chop. Just agree to him. If not, I want you two to break up. Green Vine, just let me see the red diamond. Why do you want to see the red diamond? I just want to see it. No, I can't show you. I want to see it. I accidentally broke it. I broke it. Don't be afraid. All encounters in the world are destined. We'll bear it together. Oh, you two are playing with the red diamond without me. Brother, don't. No one. I can't see it. Brother, we just accidentally broke it. Don't be afraid. All encounters in the world are destined. We'll bear it together. Green Vine, I want to buy you one like the red diamond. I broke it. Don't be afraid. All encounters in the world are destined. Let us see the red diamond too. All encounters in the world are destined. Wait a minute. When the red diamond is brought out, this red diamond will be personally awarded by the principal. At this moment, teachers from all classes and reporter friends are here. This should have been awarded by us. It's unfair. Bring that red diamond up. Child, don't be nervous. I don't believe they can maintain such good discipline. What time is it? Don't play with your phone, you idiot. Anyway, I'm dead. That person with my phone, catch him for me. I didn't. I want to ask everyone, a class that openly plays with phones gets the red diamond? What do you want? As long as the award hasn't been given, this red diamond isn't theirs. It's ours. Even if they deduct points, they'll still have a higher score than your class. Hou Liluo, why are you playing with your phone in class too? Teacher, this phone isn't mine. Do you want to deduct points from our class and give the red diamond to other classes? Then, teacher, I'm sorry. Deduct points from him. Oh, my phone fell. Deduct points. Where did the weapon come from? Deduct points. I'm playing on the computer. I'm eating hotpot. I'm live streaming. Are you class crazy? Now it's mine. No, their class is still 0.5 points higher than yours. I want to fall in love.", 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 13:04:15,612 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 13:04:17,428 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 13:04:44,230 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 13:04:44,234 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 13:04:44,234 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 13:04:44,234 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 13:04:44,476 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 13:04:44,728 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 13:04:44,728 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777532625242\dubbed_full.wav
+2026-04-30 13:04:44,728 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 13:04:44,728 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 13:04:44,728 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777532625242\job_1777532625242_dubbed_en.mp4
+2026-04-30 13:04:47,400 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777532625242\job_1777532625242_dubbed_en.mp4 (51.5 MB)
+2026-04-30 13:04:47,401 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 13:04:47,435 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 13:04:47,435 [INFO] [pipeline] === Pipeline DONE: job_1777532625242 → M:\download-ch\job_1777532625242_dubbed_en.mp4 ===
+2026-04-30 13:04:47,531 [DEBUG] [httpcore.connection] close.started
+2026-04-30 13:04:47,532 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 13:18:34,988 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 13:18:34,991 [INFO] [pipeline] === Pipeline START: job_1777533512603 ===
+2026-04-30 13:18:34,991 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777533512603
+2026-04-30 13:18:34,991 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 13:18:35,007 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777533512603\input.mp4
+2026-04-30 13:18:35,007 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 13:18:35,007 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777533512603\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 13:18:35,365 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777533512603\audio.wav (0.3 MB)
+2026-04-30 13:18:35,365 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 13:18:35,366 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 13:18:35,366 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=en
+2026-04-30 13:18:35,366 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 13:18:35,375 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 13:18:35,375 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "en"}
+2026-04-30 13:18:35,383 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 13:18:39,801 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 13:18:39,804 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 13:18:39,804 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.","usage":{"seconds":11,"cost":0.0010999999999999998}}...
+2026-04-30 13:18:39,804 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 13:18:39,805 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 13:18:39,806 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 13:18:39,806 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 13:18:40,107 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 13:18:40,107 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 13:18:40,108 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into hi.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you.\"}]"}]
+2026-04-30 13:18:40,520 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-7714dde0-b204-4ac0-800a-75fea63b4960', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in en. Translate each segment into hi.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "My name is Mithun Kumar Roy, currently I am working as an Assistant Network Engineer here at the Department of ICT, District Office, Bhushan. Thank you."}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 13:18:40,568 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 13:18:40,568 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 13:18:40,645 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001B7B7CF8830>
+2026-04-30 13:18:40,646 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x000001B7B645AE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 13:18:40,717 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001B7B7C7C690>
+2026-04-30 13:18:40,718 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 13:18:40,718 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 13:18:40,719 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 13:18:40,719 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 13:18:40,719 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 13:18:41,435 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 07:18:56 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777533535-zTh1syqVu4p0uXUCyMx7'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f44c675f8083f76-SIN')])
+2026-04-30 13:18:41,436 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 13:18:41,436 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 13:18:41,671 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 13:18:41,671 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 13:18:41,671 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 13:18:41,672 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 07:18:56 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777533535-zTh1syqVu4p0uXUCyMx7', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f44c675f8083f76-SIN'})
+2026-04-30 13:18:41,673 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 13:18:41,683 [DEBUG] [steps.translator] Translation Response Raw: [{"index": 0, "text": "मेरा नाम मिथुन कुमार रॉय है, वर्तमान में मैं यहां आईसीटी विभाग, जिला कार्यालय, भूषण में सहायक नेटवर्क इंजीनियर के रूप में कार्यरत हूं। धन्यवाद।"}]
+2026-04-30 13:18:41,684 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 13:18:41,684 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 13:18:41,684 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 13:18:41,684 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 13:18:41,684 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 13:18:41,684 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 13:18:41,685 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'मेरा नाम मिथुन कुमार रॉय है, वर्तमान में मैं यहां आईसीटी विभाग, जिला कार्यालय, भूषण में सहायक नेटवर्क इंजीनियर के रूप में कार्यरत हूं। धन्यवाद।', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 13:18:41,686 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 13:18:43,282 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 13:18:44,281 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 13:18:44,283 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 13:18:44,283 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 13:18:44,283 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 13:18:44,347 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 13:18:44,435 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 13:18:44,435 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777533512603\dubbed_full.wav
+2026-04-30 13:18:44,435 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 13:18:44,435 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 13:18:44,435 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777533512603\job_1777533512603_dubbed_hi.mp4
+2026-04-30 13:18:44,699 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777533512603\job_1777533512603_dubbed_hi.mp4 (11.4 MB)
+2026-04-30 13:18:44,700 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 13:18:44,709 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 13:18:44,709 [INFO] [pipeline] === Pipeline DONE: job_1777533512603 → M:\download-ch\job_1777533512603_dubbed_hi.mp4 ===
+2026-04-30 13:18:44,746 [DEBUG] [httpcore.connection] close.started
+2026-04-30 13:18:44,747 [DEBUG] [httpcore.connection] close.complete
