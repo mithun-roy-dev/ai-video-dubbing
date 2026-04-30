@@ -1,0 +1,458 @@
+2026-04-30 11:36:57,202 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 11:36:57,202 [INFO] [pipeline] === Pipeline START: job_1777527414973 ===
+2026-04-30 11:36:57,203 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527414973
+2026-04-30 11:36:57,203 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 11:36:57,215 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527414973\input.mp4
+2026-04-30 11:36:57,215 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 11:36:57,215 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527414973\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 11:36:57,504 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527414973\audio.wav (0.2 MB)
+2026-04-30 11:36:57,504 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 11:36:57,504 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 11:36:57,504 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=bn
+2026-04-30 11:36:57,505 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 11:36:57,511 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 11:36:57,511 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "bn"}
+2026-04-30 11:36:57,517 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 11:36:58,815 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 401 None
+2026-04-30 11:36:58,815 [DEBUG] [steps.transcriber] OpenRouter Response Status: 401
+2026-04-30 11:36:58,815 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"User not found.","code":401}}...
+2026-04-30 11:36:58,816 [ERROR] [steps.transcriber] OpenRouter Error 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 11:36:58,816 [WARNING] [steps.transcriber] Transcription attempt 1 failed: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 11:37:03,828 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 11:37:03,828 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "bn"}
+2026-04-30 11:37:03,829 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 11:37:04,928 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 401 None
+2026-04-30 11:37:04,928 [DEBUG] [steps.transcriber] OpenRouter Response Status: 401
+2026-04-30 11:37:04,928 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"User not found.","code":401}}...
+2026-04-30 11:37:04,928 [ERROR] [steps.transcriber] OpenRouter Error 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 11:37:04,928 [WARNING] [steps.transcriber] Transcription attempt 2 failed: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 11:37:04,930 [ERROR] [pipeline] Pipeline error: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+2026-04-30 11:37:04,930 [ERROR] [__main__] Pipeline error
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 401: {"error":{"message":"User not found.","code":401}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\main.py", line 49, in dispatch
+    result = run_pipeline({"id": job_id, **params}, emit_fn=emit)
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 401: {"error":{"message":"User not found.","code":401}}
+2026-04-30 11:42:44,692 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 11:42:44,694 [INFO] [pipeline] === Pipeline START: job_1777527762373 ===
+2026-04-30 11:42:44,696 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527762373
+2026-04-30 11:42:44,696 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 11:42:44,710 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527762373\input.mp4
+2026-04-30 11:42:44,710 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 11:42:44,710 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527762373\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 11:42:45,020 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527762373\audio.wav (0.2 MB)
+2026-04-30 11:42:45,020 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 11:42:45,020 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 11:42:45,020 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=bn
+2026-04-30 11:42:45,021 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 11:42:45,028 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 11:42:45,028 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "bn"}
+2026-04-30 11:42:45,033 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 11:42:47,184 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 404 None
+2026-04-30 11:42:47,185 [DEBUG] [steps.transcriber] OpenRouter Response Status: 404
+2026-04-30 11:42:47,185 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"No successful provider responses.","code":404}}...
+2026-04-30 11:42:47,185 [ERROR] [steps.transcriber] OpenRouter Error 404: {"error":{"message":"No successful provider responses.","code":404}}
+2026-04-30 11:42:47,185 [WARNING] [steps.transcriber] Transcription attempt 1 failed: HTTP 404: {"error":{"message":"No successful provider responses.","code":404}}
+2026-04-30 11:42:52,187 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 11:42:52,188 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "bn"}
+2026-04-30 11:42:52,189 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 11:42:53,253 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 404 None
+2026-04-30 11:42:53,254 [DEBUG] [steps.transcriber] OpenRouter Response Status: 404
+2026-04-30 11:42:53,254 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"error":{"message":"No successful provider responses.","code":404}}...
+2026-04-30 11:42:53,254 [ERROR] [steps.transcriber] OpenRouter Error 404: {"error":{"message":"No successful provider responses.","code":404}}
+2026-04-30 11:42:53,254 [WARNING] [steps.transcriber] Transcription attempt 2 failed: HTTP 404: {"error":{"message":"No successful provider responses.","code":404}}
+2026-04-30 11:42:53,258 [ERROR] [pipeline] Pipeline error: Transcription failed after 2 attempts: HTTP 404: {"error":{"message":"No successful provider responses.","code":404}}
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 404: {"error":{"message":"No successful provider responses.","code":404}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 404: {"error":{"message":"No successful provider responses.","code":404}}
+
+2026-04-30 11:42:53,258 [ERROR] [__main__] Pipeline error
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 39, in run
+    segments = _transcribe_via_requests(
+        audio_path, api_path, api_key, model,
+        source_lang if source_lang != 'auto' else None
+    )
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 101, in _transcribe_via_requests
+    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text}")
+RuntimeError: HTTP 404: {"error":{"message":"No successful provider responses.","code":404}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\main.py", line 49, in dispatch
+    result = run_pipeline({"id": job_id, **params}, emit_fn=emit)
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 58, in run_pipeline
+    transcript = transcriber.run(audio_path, job_config,
+        progress_fn=lambda p, m: progress(3, "Transcription", p, m))
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\steps\transcriber.py", line 59, in run
+    raise RuntimeError(f"Transcription failed after {MAX_RETRIES} attempts: {e}")
+RuntimeError: Transcription failed after 2 attempts: HTTP 404: {"error":{"message":"No successful provider responses.","code":404}}
+2026-04-30 11:44:27,982 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 11:44:27,982 [INFO] [pipeline] === Pipeline START: job_1777527866241 ===
+2026-04-30 11:44:27,983 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527866241
+2026-04-30 11:44:27,983 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 11:44:27,990 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527866241\input.mp4
+2026-04-30 11:44:27,991 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 11:44:27,991 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527866241\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 11:44:28,294 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527866241\audio.wav (0.4 MB)
+2026-04-30 11:44:28,294 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 11:44:28,294 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 11:44:28,294 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=hi
+2026-04-30 11:44:28,294 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 11:44:28,301 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 11:44:28,302 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "hi"}
+2026-04-30 11:44:28,307 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 11:44:31,926 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 11:44:31,926 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 11:44:31,926 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में","usage":{"seconds":13,"cost":0.0013}}...
+2026-04-30 11:44:31,927 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 11:44:31,928 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 11:44:31,928 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 11:44:31,928 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 11:44:32,218 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 11:44:32,218 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 11:44:32,219 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in hi. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में\"}]"}]
+2026-04-30 11:44:32,750 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-b905b455-7108-4b63-b766-912263d10fb2', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in hi. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में"}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 11:44:32,792 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 11:44:32,793 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 11:44:32,861 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001D1F4D68830>
+2026-04-30 11:44:32,861 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x000001D1F34DAE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 11:44:32,936 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001D1F4CEC550>
+2026-04-30 11:44:32,937 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 11:44:32,938 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 11:44:32,938 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 11:44:32,938 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 11:44:32,938 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 11:44:34,700 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 05:44:49 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777527887-ejdDwaZhCYaHyBUKGtuF'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f443c9308a1ce57-SIN')])
+2026-04-30 11:44:34,701 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 11:44:34,701 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 11:44:35,420 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 11:44:35,420 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 11:44:35,420 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 11:44:35,421 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 05:44:49 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777527887-ejdDwaZhCYaHyBUKGtuF', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f443c9308a1ce57-SIN'})
+2026-04-30 11:44:35,422 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 11:44:35,433 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "মা, আর কতক্ষণ লাগবে? হ্যাঁ, আর দু মিনিট। ঠিক আছে। মা, কী হয়েছে? জানো, কত দামি জিনিস ফেলে দিচ্ছিলে তুমি? এ কি পাগল নাকি? হ্যাঁ, তুমি বুঝবে না। মা, কত মশলা বেঁচে যায় এগুলোতে।"}
+]
+2026-04-30 11:44:35,433 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 11:44:35,433 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 11:44:35,433 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 11:44:35,433 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 11:44:35,434 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 11:44:35,434 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 11:44:35,434 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'মা, আর কতক্ষণ লাগবে? হ্যাঁ, আর দু মিনিট। ঠিক আছে। মা, কী হয়েছে? জানো, কত দামি জিনিস ফেলে দিচ্ছিলে তুমি? এ কি পাগল নাকি? হ্যাঁ, তুমি বুঝবে না। মা, কত মশলা বেঁচে যায় এগুলোতে।', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 11:44:35,435 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 11:44:36,567 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 11:44:38,851 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 11:44:38,852 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 11:44:38,852 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 11:44:38,852 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 11:44:38,917 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 11:44:39,007 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 11:44:39,008 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527866241\dubbed_full.wav
+2026-04-30 11:44:39,008 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 11:44:39,008 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 11:44:39,008 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527866241\job_1777527866241_dubbed_bn.mp4
+2026-04-30 11:44:39,297 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777527866241\job_1777527866241_dubbed_bn.mp4 (4.1 MB)
+2026-04-30 11:44:39,298 [ERROR] [pipeline] Pipeline error: [WinError 2] The system cannot find the file specified: 'C:\\Users\\mithu\\Videos\\VideoDubAI'
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 96, in run_pipeline
+    os.makedirs(output_dir, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 227, in makedirs
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\mithu\\Videos\\VideoDubAI'
+
+2026-04-30 11:44:39,299 [ERROR] [__main__] Pipeline error
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\main.py", line 49, in dispatch
+    result = run_pipeline({"id": job_id, **params}, emit_fn=emit)
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 96, in run_pipeline
+    os.makedirs(output_dir, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 227, in makedirs
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\mithu\\Videos\\VideoDubAI'
+2026-04-30 11:44:39,337 [DEBUG] [httpcore.connection] close.started
+2026-04-30 11:44:39,338 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 11:53:52,996 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 11:53:53,123 [INFO] [pipeline] === Pipeline START: job_1777528430783 ===
+2026-04-30 11:53:53,123 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777528430783
+2026-04-30 11:53:53,124 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 11:53:53,134 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777528430783\input.mp4
+2026-04-30 11:53:53,134 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 11:53:53,134 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777528430783\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 11:53:53,387 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777528430783\audio.wav (0.4 MB)
+2026-04-30 11:53:53,387 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 11:53:53,387 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 11:53:53,387 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/gpt-4o-transcribe lang=hi
+2026-04-30 11:53:53,387 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/gpt-4o-transcribe...
+2026-04-30 11:53:53,397 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 11:53:53,397 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/gpt-4o-transcribe", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "hi"}
+2026-04-30 11:53:53,404 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 11:53:55,314 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 11:53:55,317 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 11:53:55,317 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"मम्मी, कितना टाइम लगेगा?","usage":{"total_tokens":141,"input_tokens":130,"output_tokens":11,"cost":0.000435}}...
+2026-04-30 11:53:55,318 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 11:53:55,320 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 11:53:55,320 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 11:53:55,320 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 11:53:55,609 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 11:53:55,609 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 11:53:55,609 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in hi. Translate each segment into en.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"मम्मी, कितना टाइम लगेगा?\"}]"}]
+2026-04-30 11:53:56,082 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-bb20f545-cc47-4bb0-b73a-a3cf15885eec', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in hi. Translate each segment into en.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "मम्मी, कितना टाइम लगेगा?"}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 11:53:56,130 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 11:53:56,131 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 11:53:56,190 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001CB467B0830>
+2026-04-30 11:53:56,190 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x000001CB44F1AE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 11:53:56,256 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001CB4673C550>
+2026-04-30 11:53:56,256 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 11:53:56,257 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 11:53:56,258 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 11:53:56,258 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 11:53:56,258 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 11:53:57,180 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 05:54:12 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777528451-8aI6QqRujJgMTEgwDbLk'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f444a53cbd5f886-SIN')])
+2026-04-30 11:53:57,181 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 11:53:57,181 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 11:53:57,224 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 11:53:57,224 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 11:53:57,224 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 11:53:57,225 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 05:54:12 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777528451-8aI6QqRujJgMTEgwDbLk', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f444a53cbd5f886-SIN'})
+2026-04-30 11:53:57,225 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 11:53:57,234 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "Mom, how long will it take?"}
+]
+2026-04-30 11:53:57,234 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 11:53:57,234 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 11:53:57,234 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 11:53:57,234 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 11:53:57,234 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 11:53:57,234 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 11:53:57,234 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': 'Mom, how long will it take?', 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 11:53:57,235 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 11:53:58,667 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 11:53:58,801 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 11:53:58,803 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 11:53:58,803 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 11:53:58,803 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 11:53:58,864 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 11:53:58,942 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 11:53:58,942 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777528430783\dubbed_full.wav
+2026-04-30 11:53:58,942 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 11:53:58,942 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 11:53:58,942 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777528430783\job_1777528430783_dubbed_en.mp4
+2026-04-30 11:53:59,057 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777528430783\job_1777528430783_dubbed_en.mp4 (1.0 MB)
+2026-04-30 11:53:59,059 [ERROR] [pipeline] Pipeline error: [WinError 2] The system cannot find the file specified: 'C:\\Users\\mithu\\Videos\\VideoDubAI'
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 96, in run_pipeline
+    os.makedirs(output_dir, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 227, in makedirs
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\mithu\\Videos\\VideoDubAI'
+
+2026-04-30 11:53:59,059 [ERROR] [__main__] Pipeline error
+Traceback (most recent call last):
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\main.py", line 49, in dispatch
+    result = run_pipeline({"id": job_id, **params}, emit_fn=emit)
+  File "M:\pers\Projects\AI Video Dubbing\sidecar\pipeline.py", line 96, in run_pipeline
+    os.makedirs(output_dir, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 227, in makedirs
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\mithu\\Videos\\VideoDubAI'
+2026-04-30 11:53:59,105 [DEBUG] [httpcore.connection] close.started
+2026-04-30 11:53:59,106 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:16:20,610 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:16:20,611 [INFO] [pipeline] === Pipeline START: job_1777529778153 ===
+2026-04-30 12:16:20,613 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529778153
+2026-04-30 12:16:20,613 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:16:20,622 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529778153\input.mp4
+2026-04-30 12:16:20,623 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:16:20,623 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529778153\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:16:20,888 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529778153\audio.wav (0.4 MB)
+2026-04-30 12:16:20,888 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:16:20,888 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:16:20,888 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=hi
+2026-04-30 12:16:20,888 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:16:20,900 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:16:20,900 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "hi"}
+2026-04-30 12:16:20,906 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:16:25,023 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:16:25,026 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:16:25,028 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में","usage":{"seconds":13,"cost":0.0013}}...
+2026-04-30 12:16:25,029 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:16:25,030 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:16:25,030 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:16:25,030 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:16:25,548 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:16:25,549 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:16:25,549 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in hi. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में\"}]"}]
+2026-04-30 12:16:26,161 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-932b3770-81a7-40c5-ac15-55740781390e', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in hi. Translate each segment into bn.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में"}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:16:26,207 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:16:26,208 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:16:26,274 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002669C558830>
+2026-04-30 12:16:26,274 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x000002669ACCAE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:16:26,348 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002669C4DC690>
+2026-04-30 12:16:26,349 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:16:26,350 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:16:26,350 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:16:26,350 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:16:26,350 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:16:27,058 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:16:41 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777529801-Gbl6Pzg4YrwT2YRD40YM'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f446b49febea3ca-SIN')])
+2026-04-30 12:16:27,060 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:16:27,060 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:16:27,622 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:16:27,623 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:16:27,623 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:16:27,624 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:16:41 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777529801-Gbl6Pzg4YrwT2YRD40YM', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f446b49febea3ca-SIN'})
+2026-04-30 12:16:27,624 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:16:27,635 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "মা, আর কতক্ষণ লাগবে? হ্যাঁ, আর দু'মিনিট। ঠিক আছে। মা, কী হয়েছে? জানো, কত মূল্যবান জিনিস ফেলে দিচ্ছিলে তুমি? এ কি পাগল নাকি? হ্যাঁ, তুমি বুঝবে না মা, কত মশলা বেঁচে যায় এগুলোতে।"}
+]
+2026-04-30 12:16:27,635 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:16:27,635 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:16:27,635 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:16:27,635 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:16:27,635 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:16:27,635 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:16:27,635 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': "মা, আর কতক্ষণ লাগবে? হ্যাঁ, আর দু'মিনিট। ঠিক আছে। মা, কী হয়েছে? জানো, কত মূল্যবান জিনিস ফেলে দিচ্ছিলে তুমি? এ কি পাগল নাকি? হ্যাঁ, তুমি বুঝবে না মা, কত মশলা বেঁচে যায় এগুলোতে।", 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:16:27,637 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:16:29,423 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:16:31,600 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:16:31,602 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:16:31,602 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:16:31,602 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:16:31,687 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:16:31,799 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:16:31,799 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529778153\dubbed_full.wav
+2026-04-30 12:16:31,799 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:16:31,800 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:16:31,800 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529778153\job_1777529778153_dubbed_bn.mp4
+2026-04-30 12:16:32,081 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529778153\job_1777529778153_dubbed_bn.mp4 (4.1 MB)
+2026-04-30 12:16:32,082 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:16:32,095 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:16:32,095 [INFO] [pipeline] === Pipeline DONE: job_1777529778153 → M:\download-ch\job_1777529778153_dubbed_bn.mp4 ===
+2026-04-30 12:16:32,155 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:16:32,156 [DEBUG] [httpcore.connection] close.complete
+2026-04-30 12:18:58,056 [INFO] [__main__] Sidecar started — waiting for JSON-RPC commands on stdin
+2026-04-30 12:18:58,056 [INFO] [pipeline] === Pipeline START: job_1777529935556 ===
+2026-04-30 12:18:58,057 [INFO] [utils] Temp dir created: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529935556
+2026-04-30 12:18:58,057 [INFO] [pipeline] [Step 1] Download — 0% — Starting download...
+2026-04-30 12:18:58,067 [INFO] [steps.downloader] Copied local file to: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529935556\input.mp4
+2026-04-30 12:18:58,067 [INFO] [pipeline] [Step 2] Extract Audio — 0% — Extracting audio track...
+2026-04-30 12:18:58,067 [INFO] [steps.extractor] Extracting audio from: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529935556\input.mp4 using C:\Users\mithu\AppData\Roaming\Python\Python313\site-packages\imageio_ffmpeg\binaries\ffmpeg-win-x86_64-v7.1.exe
+2026-04-30 12:18:58,407 [INFO] [steps.extractor] Audio extracted: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529935556\audio.wav (0.4 MB)
+2026-04-30 12:18:58,407 [INFO] [pipeline] [Step 2] Extract Audio — 100% — Audio extracted.
+2026-04-30 12:18:58,407 [INFO] [pipeline] [Step 3] Transcription — 0% — Transcribing speech...
+2026-04-30 12:18:58,407 [INFO] [steps.transcriber] [Transcription] provider=openrouter model=openai/whisper-1 lang=hi
+2026-04-30 12:18:58,408 [INFO] [pipeline] [Step 3] Transcription — 10% — Sending audio to openrouter / openai/whisper-1...
+2026-04-30 12:18:58,421 [DEBUG] [steps.transcriber] OpenRouter Request URL: https://openrouter.ai/api/v1/audio/transcriptions
+2026-04-30 12:18:58,422 [DEBUG] [steps.transcriber] OpenRouter Request Payload: {"model": "openai/whisper-1", "input_audio": {"data": "<base64_audio_data>", "format": "wav"}, "language": "hi"}
+2026-04-30 12:18:58,428 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:19:02,306 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/transcriptions HTTP/1.1" 200 None
+2026-04-30 12:19:02,308 [DEBUG] [steps.transcriber] OpenRouter Response Status: 200
+2026-04-30 12:19:02,308 [DEBUG] [steps.transcriber] OpenRouter Response Body: {"text":"मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में","usage":{"seconds":13,"cost":0.0013}}...
+2026-04-30 12:19:02,308 [WARNING] [steps.transcriber] No segments in response, using full text as single segment
+2026-04-30 12:19:02,310 [INFO] [steps.transcriber] Transcribed 1 segments.
+2026-04-30 12:19:02,310 [INFO] [pipeline] [Step 3] Transcription — 100% — Transcribed 1 segments.
+2026-04-30 12:19:02,311 [INFO] [pipeline] [Step 4] Translation — 0% — Translating segments...
+2026-04-30 12:19:02,609 [INFO] [steps.translator] [Translation] provider=openrouter model=google/gemini-2.5-flash, 1 segments
+2026-04-30 12:19:02,609 [INFO] [pipeline] [Step 4] Translation — 10% — Sending 1 segments to openrouter / google/gemini-2.5-flash...
+2026-04-30 12:19:02,609 [DEBUG] [steps.translator] Translation Request Payload: [{"role": "system", "content": "You are a professional video dubbing translator. You will receive a list of timed transcript segments in hi. Translate each segment into en.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker's tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {\"index\": 0, \"text\": \"translated text\"},\n  {\"index\": 1, \"text\": \"...\"}\n]"}, {"role": "user", "content": "[{\"index\": 0, \"text\": \"मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में\"}]"}]
+2026-04-30 12:19:03,015 [DEBUG] [openai._base_client] Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-44ca5c3e-16b1-477b-a5b9-1352b9972c00', 'content': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a professional video dubbing translator. You will receive a list of timed transcript segments in hi. Translate each segment into en.\n\nRules:\n1. Preserve the exact same number of segments.\n2. Keep translations concise — they must fit within the original segment duration when spoken aloud.\n3. Maintain the speaker\'s tone and register.\n4. Return ONLY a JSON array of objects with no preamble, no markdown, no explanation:\n\n[\n  {"index": 0, "text": "translated text"},\n  {"index": 1, "text": "..."}\n]'}, {'role': 'user', 'content': '[{"index": 0, "text": "मम्मी कितना टाइम लगेगा? हाँ मस दो मिर्ण ठीक है मम्मे क्या हुआ? पता है कितनी कीम्टी चीज फैक रही थी आप ये पागल है क्या? हाँ आप नहीं समझोगी मम्मी कितना मसाला बच जाता है इन में"}]'}], 'model': 'google/gemini-2.5-flash', 'temperature': 0.3}}
+2026-04-30 12:19:03,060 [DEBUG] [openai._base_client] Sending HTTP Request: POST https://openrouter.ai/api/v1/chat/completions
+2026-04-30 12:19:03,060 [DEBUG] [httpcore.connection] connect_tcp.started host='openrouter.ai' port=443 local_address=None timeout=5.0 socket_options=None
+2026-04-30 12:19:03,136 [DEBUG] [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B24BA50830>
+2026-04-30 12:19:03,137 [DEBUG] [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x000002B24A1BAE70> server_hostname='openrouter.ai' timeout=5.0
+2026-04-30 12:19:03,198 [DEBUG] [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000002B24B9DC690>
+2026-04-30 12:19:03,199 [DEBUG] [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+2026-04-30 12:19:03,199 [DEBUG] [httpcore.http11] send_request_headers.complete
+2026-04-30 12:19:03,199 [DEBUG] [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+2026-04-30 12:19:03,199 [DEBUG] [httpcore.http11] send_request_body.complete
+2026-04-30 12:19:03,199 [DEBUG] [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+2026-04-30 12:19:03,830 [DEBUG] [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Thu, 30 Apr 2026 06:19:18 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Access-Control-Allow-Origin', b'*'), (b'X-Generation-Id', b'gen-1777529958-dTVTH7ftdaWJcFTgTzEm'), (b'access-control-expose-headers', b'X-Generation-Id,cf-ray'), (b'Permissions-Policy', b'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")'), (b'Referrer-Policy', b'no-referrer, strict-origin-when-cross-origin'), (b'X-Content-Type-Options', b'nosniff'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9f446f1e3880f904-SIN')])
+2026-04-30 12:19:03,831 [INFO] [httpx] HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-30 12:19:03,831 [DEBUG] [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+2026-04-30 12:19:04,390 [DEBUG] [httpcore.http11] receive_response_body.complete
+2026-04-30 12:19:04,390 [DEBUG] [httpcore.http11] response_closed.started
+2026-04-30 12:19:04,390 [DEBUG] [httpcore.http11] response_closed.complete
+2026-04-30 12:19:04,391 [DEBUG] [openai._base_client] HTTP Response: POST https://openrouter.ai/api/v1/chat/completions "200 OK" Headers({'date': 'Thu, 30 Apr 2026 06:19:18 GMT', 'content-type': 'application/json', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'access-control-allow-origin': '*', 'x-generation-id': 'gen-1777529958-dTVTH7ftdaWJcFTgTzEm', 'access-control-expose-headers': 'X-Generation-Id,cf-ray', 'permissions-policy': 'payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com" "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")', 'referrer-policy': 'no-referrer, strict-origin-when-cross-origin', 'x-content-type-options': 'nosniff', 'content-encoding': 'gzip', 'server': 'cloudflare', 'cf-ray': '9f446f1e3880f904-SIN'})
+2026-04-30 12:19:04,392 [DEBUG] [openai._base_client] request_id: None
+2026-04-30 12:19:04,401 [DEBUG] [steps.translator] Translation Response Raw: [
+  {"index": 0, "text": "Mom, how long will it take? Yes, just two minutes. Okay, Mom, what happened? Do you know how precious this thing was that you were throwing away? Are you crazy? Yes, you won't understand, Mom, how much spice is left in these."}
+]
+2026-04-30 12:19:04,401 [INFO] [pipeline] [Step 4] Translation — 80% — Parsing translation response...
+2026-04-30 12:19:04,401 [INFO] [steps.translator] Translation complete: 1 segments
+2026-04-30 12:19:04,401 [INFO] [pipeline] [Step 5] Text-to-Speech — 0% — Synthesizing speech...
+2026-04-30 12:19:04,401 [INFO] [steps.tts] TTS step: OpenRouter provider selected but invalid key found. Falling back to transcription OpenRouter key.
+2026-04-30 12:19:04,401 [DEBUG] [steps.tts] TTS segment 1/1: provider=openrouter model=openai/gpt-4o-mini-tts-2025-12-15
+2026-04-30 12:19:04,401 [DEBUG] [steps.tts] OpenRouter TTS Request URL: https://openrouter.ai/api/v1/audio/speech
+2026-04-30 12:19:04,401 [DEBUG] [steps.tts] OpenRouter TTS Request Payload: {'model': 'openai/gpt-4o-mini-tts-2025-12-15', 'input': "Mom, how long will it take? Yes, just two minutes. Okay, Mom, what happened? Do you know how precious this thing was that you were throwing away? Are you crazy? Yes, you won't understand, Mom, how much spice is left in these.", 'voice': 'alloy', 'response_format': 'mp3'}
+2026-04-30 12:19:04,402 [DEBUG] [urllib3.connectionpool] Starting new HTTPS connection (1): openrouter.ai:443
+2026-04-30 12:19:05,997 [DEBUG] [urllib3.connectionpool] https://openrouter.ai:443 "POST /api/v1/audio/speech HTTP/1.1" 200 None
+2026-04-30 12:19:07,765 [DEBUG] [steps.tts] OpenRouter TTS Response Status: 200
+2026-04-30 12:19:07,767 [INFO] [pipeline] [Step 5] Text-to-Speech — 100% — TTS segment 1/1
+2026-04-30 12:19:07,767 [INFO] [steps.tts] TTS complete: 1 audio segments
+2026-04-30 12:19:07,767 [INFO] [pipeline] [Step 6] Audio Alignment — 0% — Aligning audio timing...
+2026-04-30 12:19:07,828 [INFO] [pipeline] [Step 6] Audio Alignment — 90% — Aligning segment 1/1
+2026-04-30 12:19:07,933 [INFO] [pipeline] [Step 6] Audio Alignment — 100% — Audio alignment complete.
+2026-04-30 12:19:07,933 [INFO] [steps.aligner] Full dubbed audio: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529935556\dubbed_full.wav
+2026-04-30 12:19:07,933 [INFO] [pipeline] [Step 7] Lip Sync — 100% — Lip sync skipped (disabled).
+2026-04-30 12:19:07,933 [INFO] [pipeline] [Step 8] Compose — 0% — Composing final video...
+2026-04-30 12:19:07,933 [INFO] [steps.composer] Composing final video: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529935556\job_1777529935556_dubbed_en.mp4
+2026-04-30 12:19:08,189 [INFO] [steps.composer] Final video ready: C:\Users\mithu\AppData\Local\Temp\videodub_jobs\job_1777529935556\job_1777529935556_dubbed_en.mp4 (4.1 MB)
+2026-04-30 12:19:08,189 [INFO] [pipeline] Target output directory: M:\download-ch
+2026-04-30 12:19:08,195 [INFO] [pipeline] [Step 8] Compose — 100% — Final video ready.
+2026-04-30 12:19:08,195 [INFO] [pipeline] === Pipeline DONE: job_1777529935556 → M:\download-ch\job_1777529935556_dubbed_en.mp4 ===
+2026-04-30 12:19:08,231 [DEBUG] [httpcore.connection] close.started
+2026-04-30 12:19:08,232 [DEBUG] [httpcore.connection] close.complete

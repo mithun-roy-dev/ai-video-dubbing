@@ -55,6 +55,7 @@ export function HomeScreen() {
         lip_sync_enabled: settings.lipSyncEnabled,
         gpu_enabled: settings.gpuEnabled,
         keep_temp_files: settings.keepTempFiles,
+        output_dir: settings.outputDir || null,
         api_providers: buildApiProvidersPayload(apiProviders),
       },
     }

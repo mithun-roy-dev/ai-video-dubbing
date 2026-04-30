@@ -89,14 +89,24 @@ def run_pipeline(job_config: dict, emit_fn=None) -> dict:
         progress(8, "Compose", 0, "Composing final video...")
         raw_output_path = composer.run(final_video, dubbed_audio, job_config, temp_dir)
         
-        # Move the final output to the user's Videos folder so they can easily find it!
+        # Move the final output to the user's selected folder (or fallback to Videos)
         import shutil
-        home_dir = os.path.expanduser("~")
-        output_dir = os.path.join(home_dir, "Videos", "VideoDubAI")
+        output_dir = job_config.get("output_dir")
+        if not output_dir:
+            home_dir = os.path.expanduser("~")
+            output_dir = os.path.join(home_dir, "Videos", "VideoDubAI")
+        
+        log.info(f"Target output directory: {output_dir}")
         os.makedirs(output_dir, exist_ok=True)
         
         final_filename = os.path.basename(raw_output_path)
         safe_output_path = os.path.join(output_dir, final_filename)
+        
+        # Handle collision: if file exists, append job_id
+        if os.path.exists(safe_output_path):
+            name, ext = os.path.splitext(final_filename)
+            safe_output_path = os.path.join(output_dir, f"{name}_{job_id}{ext}")
+
         shutil.move(raw_output_path, safe_output_path)
         output_path = safe_output_path
 

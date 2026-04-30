@@ -11,15 +11,23 @@ from pipeline import run_pipeline
 
 import os
 
-# Ensure log directory exists
-os.makedirs("log", exist_ok=True)
+# Ensure log directory exists in the project root
+# Get the absolute path to the project root (one level up from this script)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_DIR = os.path.join(PROJECT_ROOT, "log")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# Add user's FFmpeg path to environment
+FFMPEG_DIR = r"C:\Users\mithu\ffmpeg-7.1.1-full_build\ffmpeg-7.1.1-full_build\bin"
+if os.path.exists(FFMPEG_DIR):
+    os.environ["PATH"] = FFMPEG_DIR + os.pathsep + os.environ.get("PATH", "")
 
 logging.basicConfig(
     level=logging.DEBUG, # Use DEBUG to capture more details
     format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
     handlers=[
         logging.StreamHandler(sys.stderr),  # Keep stderr for internal logs; stdout is for JSON-RPC
-        logging.FileHandler("log/debug_log.txt", encoding="utf-8")
+        logging.FileHandler(os.path.join(LOG_DIR, "debug_log.txt"), encoding="utf-8")
     ]
 )
 log = logging.getLogger(__name__)

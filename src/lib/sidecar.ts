@@ -22,6 +22,7 @@ export interface JobConfig {
     lip_sync_enabled: boolean
     gpu_enabled: boolean
     keep_temp_files: boolean
+    output_dir: string | null
     /** Per-step provider settings — replaces the flat api_keys map */
     api_providers: {
       transcription: StepProviderPayload
